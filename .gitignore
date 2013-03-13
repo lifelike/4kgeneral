@@ -3,3 +3,6 @@
 *.jar
 *.war
 *.ear
+make.*
+env.*
+tmp
