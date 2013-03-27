@@ -46,7 +46,7 @@ printable/%.class: printable/%.java
 	javac -d printable $<
 
 %.class: %.java
-	javac $<
+	javac -target 1.5 $<
 
 clean:
 	$(RM) -r *.class *~ *.jar *.java *.images.h tmp/* debug/*
