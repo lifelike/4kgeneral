@@ -39,6 +39,6 @@ for i in reversed(range(len(lines))):
         lines = lines[:end_line]
         break
 
-print >> o, '   "' + ('"\n   +"'.join(lines)) + '"'
+print >> o, '   "' + ('"\n   str_concat "'.join(lines)) + '"'
 
 o.close()

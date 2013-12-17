@@ -1,5 +1,6 @@
 // -*- mode: java -*-
 
+#ifdef JAVA
 import java.awt.Event;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,15 +9,18 @@ import java.util.Random;
 
 #ifdef DEBUG
 import java.awt.Frame;
+#endif
+
 // #define EXTRA_DEBUG
 // #define DEBUG_ZOC
 // #define DEBUG_AI
-#endif
 
 #ifdef PRINTABLE
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+#endif
+
 #endif
 
 /*
@@ -54,6 +58,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#define WHITE 0xffffff
+#define BLACK 0
+#define RED 0xff0000
+
+#ifdef JAVA
 public class G
 #if defined(APPLET)
     extends java.applet.Applet
@@ -67,43 +76,112 @@ public class G
     #define ZOOM 1
 #endif
 
-    private final static int HEX_HEIGHT = 46 * ZOOM;
-    private final static int HEX_WIDTH = 60 * ZOOM; //~= HEX_HEIGHT * 1.155;
-    private final static byte MAP_COLUMNS = 17;
-    private final static byte MAP_ROWS = 10;
-    private final static int MAP_WIDTH = (1 + (MAP_COLUMNS) * 3 / 4)
-	* HEX_WIDTH;
-    private final static int MAP_HEIGHT = MAP_ROWS * HEX_HEIGHT
-	+ HEX_HEIGHT;
-    private final static int MAP_FIRST_COLUMN_CENTER_X = HEX_WIDTH / 2;
-    private final static int MAP_COLUMN_DISTANCE = HEX_WIDTH * 3 / 4;
-    private final static int MAP_EVEN_ROW_LAYER = HEX_HEIGHT / 2;
-    private final static int MAP_HEXES = MAP_COLUMNS * MAP_ROWS;
+#define str_concat +
 
-    private final static byte NO_UNIT = 0;
-    private final static byte INFANTRY = 1;
-    private final static byte TANK = 2;
-    private final static byte ARTILLERY = 3;
-    private final static byte ENGINEER = 4;
+#define const_string(name) private final static String name
+#define const_byte_array(name) private final static byte[] name
+#define new_byte_array new byte[]
+#define sized_byte_array(name, size) private final static byte[] name = new byte[size]
+#define const_int_array(name) private final static int[] name
+#define int_array(name) int[] name
+#define new_int_array new int[]
+#define char_at(a, i) a.charAt(i)
 
-    private final static byte NR_UNIT_TYPES = ENGINEER;
+#define new_random(name, seed) Random name = new Random(seed)
+#define random_int(name, limit) name .nextInt(limit)
 
-    private final static int BITMAP_DATA_WIDTH = 8;
-    private final static int BITMAP_DATA_HEIGHT = 8;
-    private final static int BITMAP_DATA_SIZE
-        = BITMAP_DATA_WIDTH * BITMAP_DATA_HEIGHT;
-    private final static int BITMAP_SCALE = 3 * ZOOM;
-    private final static int BITMAP_WIDTH = BITMAP_DATA_WIDTH * BITMAP_SCALE;
-    private final static int BITMAP_HEIGHT = BITMAP_DATA_HEIGHT * BITMAP_SCALE;
-    private final static int BITMAP_SELECTED = 0;
-    private final static int BITMAP_LAST_UNIT = NR_UNIT_TYPES;
-    private final static int BITMAP_MOVE_TARGET = BITMAP_LAST_UNIT + 1;
-    private final static int BITMAP_ATTACK_TARGET = BITMAP_LAST_UNIT + 2;
-    private final static int BITMAP_FUTURE_TURN = BITMAP_LAST_UNIT + 3;
-    private final static int BITMAP_TURN = BITMAP_LAST_UNIT + 4;
-    private final static int NR_BITMAPS = BITMAP_TURN + 1;
+#define set_color(c) g.setColor(new Color(c))
+#define fill_rect(x, y, w, h) g.fillRect(x, y, w, h)
+#define blit_buffer() pg.drawImage(bufferImage, 0, 0, this)
+#define draw_string(s, x, y) g.drawString(s, x, y)
 
-    private final static String BITMAP_DATA =
+#endif
+
+#ifdef C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define str_concat
+
+#define ZOOM 1
+
+#define private
+#define boolean bool
+#define const_byte_array(name) signed char name[]
+#define new_byte_array
+#define sized_byte_array(name, size) signed char name[size]
+#define const_int_array(name) int name[]
+#define int_array(name) int name[]
+#define new_int_array
+#define const_string(name) char name[]
+#define byte signed char
+#define char_at(a, i) a[i]
+
+#define new_random(name, seed)
+#define random_int(name, limit) (rand() % limit)
+
+#define set_color(c) fprintf(stderr, "set_color %x\n", c)
+#define fill_rect(x, y, w, h) fprintf(stderr, "fill_rect %d %d %d %d", x, y, w, h)
+#define blit_buffer()
+#define draw_string(s, x, y) fprintf(stderr, "draw_string %s %d %d", s, x, y)
+
+#ifdef SDL
+    #include <SDL.h>
+
+    SDL_Window *window = NULL;
+    SDL_Surface *screen = NULL;
+
+void repaint() {
+}
+
+#else
+
+void repaint() {
+}
+
+#endif
+
+
+
+#endif
+
+    #define HEX_HEIGHT (46 * ZOOM)
+     // HEX_WIDTH ~= HEX_HEIGHT * 1.155;
+    #define HEX_WIDTH (60 * ZOOM)
+    #define MAP_COLUMNS (17)
+    #define MAP_ROWS (10)
+    #define MAP_WIDTH ((1 + MAP_COLUMNS) * 3 / 4 * HEX_WIDTH)
+    #define MAP_HEIGHT (MAP_ROWS * HEX_HEIGHT + HEX_HEIGHT)
+    #define MAP_FIRST_COLUMN_CENTER_X (HEX_WIDTH / 2)
+    #define MAP_COLUMN_DISTANCE (HEX_WIDTH * 3 / 4)
+    #define MAP_EVEN_ROW_LAYER (HEX_HEIGHT / 2)
+    #define MAP_HEXES (MAP_COLUMNS * MAP_ROWS)
+
+    #define NO_UNIT (0)
+    #define INFANTRY (1)
+    #define TANK (2)
+    #define ARTILLERY (3)
+    #define ENGINEER (4)
+
+    #define NR_UNIT_TYPES (ENGINEER)
+
+    #define BITMAP_DATA_WIDTH (8)
+    #define BITMAP_DATA_HEIGHT (8)
+    #define BITMAP_DATA_SIZE (BITMAP_DATA_WIDTH * BITMAP_DATA_HEIGHT)
+    #define BITMAP_SCALE (3 * ZOOM)
+    #define BITMAP_WIDTH (BITMAP_DATA_WIDTH * BITMAP_SCALE)
+    #define BITMAP_HEIGHT (BITMAP_DATA_HEIGHT * BITMAP_SCALE)
+    #define BITMAP_SELECTED (0)
+    #define BITMAP_LAST_UNIT (NR_UNIT_TYPES)
+    #define BITMAP_MOVE_TARGET (BITMAP_LAST_UNIT + 1)
+    #define BITMAP_ATTACK_TARGET (BITMAP_LAST_UNIT + 2)
+    #define BITMAP_FUTURE_TURN (BITMAP_LAST_UNIT + 3)
+    #define BITMAP_TURN (BITMAP_LAST_UNIT + 4)
+    #define NR_BITMAPS (BITMAP_TURN + 1)
+
+    const_string(BITMAP_DATA) =
 #include "G.images.h"
         ;
 
@@ -123,47 +201,45 @@ public class G
     /**
      * Base percentage of hex containing woods.
      */
-    private final static int WOODS_BASE = 10;
+    #define WOODS_BASE (10)
 
     /**
      * Increased percentage of hex containing woods
      * for each of hex above and to the left that contains woods.
      */
-    private final static int WOODS_SPREAD = 30;
+        #define WOODS_SPREAD (30)
 
-    private final static int MAX_NR_RIVERS = 3;
+        #define MAX_NR_RIVERS (3)
 
-    private final static int FIRST_POSSIBLE_RIVER_COLUMN = 3;
+        #define FIRST_POSSIBLE_RIVER_COLUMN (3)
 
     /**
      * Percentage of hexes behind rivers that have no other unit
      * that will receive an infantry unit.
      */
-    private final static int RIVER_LINE_GARRISON = 50;
+        #define RIVER_LINE_GARRISON (50)
 
-    private final static int BRIDGE_PERCENT = 5;
+        #define BRIDGE_PERCENT (5)
 
-    private final static int CAMPAIGN_FRIENDLY_COLUMNS
-        = FIRST_POSSIBLE_RIVER_COLUMN;
-
+        #define CAMPAIGN_FRIENDLY_COLUMNS (FIRST_POSSIBLE_RIVER_COLUMN)
     /**
      * Minimum size of no man's land.
      */
-    private final static int CAMPAIGN_MIN_NML = 3;
+        #define CAMPAIGN_MIN_NML (3)
 
     // following are culmulative percentages
-    private final static int CAMPAIGN_FRIENDLY_INFANTRY = 17;
-    private final static int CAMPAIGN_FRIENDLY_TANK = 24;
-    private final static int CAMPAIGN_FRIENDLY_ARTILLERY = 30;
-    private final static int CAMPAIGN_FRIENDLY_ENGINEER = 35;
+        #define CAMPAIGN_FRIENDLY_INFANTRY (17)
+        #define CAMPAIGN_FRIENDLY_TANK (24)
+        #define CAMPAIGN_FRIENDLY_ARTILLERY (30)
+        #define CAMPAIGN_FRIENDLY_ENGINEER (35)
 
     // for the enemy we use random number 0-999 instead
     // because of the much larger area covered
-    private final static int CAMPAIGN_ENEMY_INFANTRY = 35;
-    private final static int CAMPAIGN_ENEMY_TANK = 45;
-    private final static int CAMPAIGN_ENEMY_ARTILLERY = 50;
+        #define CAMPAIGN_ENEMY_INFANTRY (35)
+        #define CAMPAIGN_ENEMY_TANK (45)
+        #define CAMPAIGN_ENEMY_ARTILLERY (50)
 
-    private final static byte[] campaign = new byte[] {
+    const_byte_array(campaign) = new_byte_array {
         0x29, 0x33, 0x39,
         0x30, 0x1f, 0x22,
         0x2b, 0x22, 0x22,
@@ -171,50 +247,48 @@ public class G
         0x35, 0x42, 0x71,
         0x45, 0x52, 0x01,
         0x55, 0x62, 0x11,
-        0x65, 0xffffff90, 0x32,
+        0x65, -112, 0x32,
         0x0a, 0x15, 0x31,
         0x19, 0x74, 0x4a,
-        0x53, 0x54, 0xffffff9f,
-        0x55, 0x57, 0xffffffa4,
+        0x53, 0x54, -97,
+        0x55, 0x57, -92,
     };
 
-    private final static int LAST_CAMPAIGN_SCENARIO = 11;
+    #define LAST_CAMPAIGN_SCENARIO (11)
 
-    private final static int COLOR_FRIENDLY_BACKGROUND = 0x386bb9;
-    private final static int COLOR_FRIENDLY_BORDER = 0x0d38b9;
-    private final static int COLOR_ENEMY_BACKGROUND = 0xe5a047;
-    private final static int COLOR_ENEMY_BORDER = 0xb93838;
-    private final static int COLOR_MOVED_BORDER = 0x878787;
-    private final static int COLOR_OPEN = 0xffffed;
-    private final static int COLOR_WOODS_1 = 0x3a691d;
-    private final static int COLOR_WOODS_2 = 0x62875b;
-    private final static int COLOR_WATER_1 = 0x62a7a7;
-    private final static int COLOR_WATER_2 = 0x404aa7;
-    private final static int COLOR_CITY_1 = 0x624848;
-    private final static int COLOR_CITY_2 = 0xa78787;
-    private final static int COLOR_RED_1 = 0xff0037;
-    private final static int COLOR_RED_2 = 0xff4037;
-    private final static int COLOR_GREEN_1 = 0x62ff00;
-    private final static int COLOR_GREEN_2 = 0x3aa700;
+        #define COLOR_FRIENDLY_BACKGROUND (0x386bb9)
+        #define COLOR_FRIENDLY_BORDER (0x0d38b9)
+        #define COLOR_ENEMY_BACKGROUND (0xe5a047)
+        #define COLOR_ENEMY_BORDER (0xb93838)
+        #define COLOR_MOVED_BORDER (0x878787)
+        #define COLOR_OPEN (0xffffed)
+        #define COLOR_WOODS_1 (0x3a691d)
+        #define COLOR_WOODS_2 (0x62875b)
+        #define COLOR_WATER_1 (0x62a7a7)
+        #define COLOR_WATER_2 (0x404aa7)
+        #define COLOR_CITY_1 (0x624848)
+        #define COLOR_CITY_2 (0xa78787)
+        #define COLOR_RED_1 (0xff0037)
+        #define COLOR_RED_2 (0xff4037)
+        #define COLOR_GREEN_1 (0x62ff00)
+        #define COLOR_GREEN_2 (0x3aa700)
 
     // defining how to draw map "hexes" (more like circles)
     // for each terrain type the listed values are:
-    private final static int TERRAIN_DRAW_COLOR_1 = 0;
-    private final static int TERRAIN_DRAW_COLOR_2 = 1;
-    private final static int TERRAIN_DRAW_X_SPREAD_OFFSET = 2;
-    private final static int TERRAIN_DRAW_WIDTH_OFFSET = 3;
-    private final static int TERRAIN_DRAW_HEIGHT_OFFSET = 4;
-    private final static int TERRAIN_DRAW_AMOUNT_OFFSET = 5;
-    private final static int TERRAIN_DEFENSE_OFFSET = 6;
-    private final static int TERRAIN_MOVE_COST_OFFSET = 7;
-    private final static int TERRAIN_DATA_SIZE
-        = TERRAIN_MOVE_COST_OFFSET + 1;
+        #define TERRAIN_DRAW_COLOR_1 (0)
+        #define TERRAIN_DRAW_COLOR_2 (1)
+        #define TERRAIN_DRAW_X_SPREAD_OFFSET (2)
+        #define TERRAIN_DRAW_WIDTH_OFFSET (3)
+        #define TERRAIN_DRAW_HEIGHT_OFFSET (4)
+        #define TERRAIN_DRAW_AMOUNT_OFFSET (5)
+        #define TERRAIN_DEFENSE_OFFSET (6)
+        #define TERRAIN_MOVE_COST_OFFSET (7)
+        #define TERRAIN_DATA_SIZE (TERRAIN_MOVE_COST_OFFSET + 1)
 
     // terrain defense is chance of eliminating a unit in that terrain
     // (multiply by 5 to get chance in %)
 
-    private final static int[] terrainData
-        = new int[] {
+    int_array(terrainData) = new_int_array {
         0, 0, 0, 0, 0, 0, 9, 1,
         COLOR_WOODS_1, COLOR_WOODS_2, HEX_WIDTH * 7 / 10, 4, 4, 0x87, 6, 2,
         COLOR_CITY_1, COLOR_CITY_2, HEX_WIDTH * 4 / 5, 7, 7, 45, 5, 1,
@@ -222,65 +296,59 @@ public class G
         13
     };
 
-    private final static int SCREEN_MAP_Y = BITMAP_HEIGHT;
-    private final static int SCREEN_WIDTH = MAP_WIDTH;
-    private final static int SCREEN_HEIGHT
-        = MAP_HEIGHT + SCREEN_MAP_Y + 2;
-    private final static int SCREEN_STATUS_BAR_TEXT_Y = BITMAP_HEIGHT - 3;
-    private final static int SCREEN_TURN_LABEL_X = 10;
-    private final static int SCREEN_TURN_NR_X = 50;
-    private final static int SCREEN_TURN_SLASH_X = 65;
-    private final static int SCREEN_TURN_TOTAL_X = 70;
-    private final static int SCREEN_LEVEL_LABEL_X = 140;
-    private final static int SCREEN_LEVEL_NR_X = 180;
-    private final static int SCREEN_BUTTON_X = SCREEN_WIDTH - 100;
-    private final static int SCREEN_BUTTON_TEXT_X = SCREEN_WIDTH - 80;
-    private final static int SCREEN_BUTTON_HEIGHT = BITMAP_HEIGHT;
-    private final static int SCREEN_MESSAGE_X = 300;
+    #define SCREEN_MAP_Y (BITMAP_HEIGHT)
+    #define SCREEN_WIDTH (MAP_WIDTH)
+    #define SCREEN_HEIGHT (MAP_HEIGHT + SCREEN_MAP_Y + 2)
+        #define SCREEN_STATUS_BAR_TEXT_Y (BITMAP_HEIGHT - 3)
+        #define SCREEN_TURN_LABEL_X (10)
+        #define SCREEN_TURN_NR_X (50)
+        #define SCREEN_TURN_SLASH_X (65)
+        #define SCREEN_TURN_TOTAL_X (70)
+        #define SCREEN_LEVEL_LABEL_X (140)
+        #define SCREEN_LEVEL_NR_X (180)
+        #define SCREEN_BUTTON_X (SCREEN_WIDTH - 100)
+        #define SCREEN_BUTTON_TEXT_X (SCREEN_WIDTH - 80)
+        #define SCREEN_BUTTON_HEIGHT (BITMAP_HEIGHT)
+        #define SCREEN_MESSAGE_X (300)
 
-    private final static int UNIT_BORDER_WIDTH = 2;
+        #define UNIT_BORDER_WIDTH (2)
 
-    private final static byte CLEAR = 0;
-    private final static byte WOODS = 1;
-    private final static byte CITY = 2;
-    private final static byte WATER = 3;
-    private final static int NR_TERRAIN_TYPES = 4;
+        #define CLEAR (0)
+        #define WOODS (1)
+        #define CITY (2)
+        #define WATER (3)
+        #define NR_TERRAIN_TYPES (4)
 
-    private final static int CITY_RARITY = 40;
+        #define CITY_RARITY (40)
 
-    private final static int NR_TURNS = 15;
+        #define NR_TURNS (15)
 
-    private final static byte SEARCH_STATE_BIT = 64;
+        #define SEARCH_STATE_BIT (64)
 
-    private final static byte NEW_LEVEL = 1;
-    private final static byte NEW_TURN = 2 | SEARCH_STATE_BIT;
-    private final static byte SELECT_UNIT_TO_MOVE = 3;
-    private final static byte MARK_UNIT_TO_MOVE = 4;
-    private final static byte FIND_MOVE_TARGETS = 5 | SEARCH_STATE_BIT;
-    private final static byte FIND_ATTACK_TARGETS = 6 | SEARCH_STATE_BIT;
-    private final static byte SHOW_TARGETS = 7;
-    private final static byte FIND_ENEMY_MOVE_TARGETS = 8 | SEARCH_STATE_BIT;
-    private final static byte FIND_ENEMY_ZOC = 9 | SEARCH_STATE_BIT;
-    private final static byte FIND_FRIENDLY_ZOC = 10 | SEARCH_STATE_BIT;
-    private final static byte WON_CAMPAIGN = 11;
-    private final static byte WON_LEVEL = 12;
-    private final static byte FAIL_LEVEL = 13;
-    private final static byte FIND_FRIENDLY_FOV = 14 | SEARCH_STATE_BIT;
-    private final static byte SELECT_ENEMY_UNIT_TO_MOVE = 15
-        | SEARCH_STATE_BIT;
-    private final static byte FIND_ENEMY_ATTACK_TARGETS = 16
-        | SEARCH_STATE_BIT;
-    private final static byte FIND_FRIENDLY_THREAT = 17
-        | SEARCH_STATE_BIT;
-    private final static byte FIND_ENEMY_THREAT = 18
-        | SEARCH_STATE_BIT;
-    private final static byte FIND_ENEMY_VALUE = 19
-        | SEARCH_STATE_BIT;
+        #define NEW_LEVEL (1)
+        #define NEW_TURN (2 | SEARCH_STATE_BIT)
+        #define SELECT_UNIT_TO_MOVE (3)
+        #define MARK_UNIT_TO_MOVE (4)
+        #define FIND_MOVE_TARGETS (5 | SEARCH_STATE_BIT)
+        #define FIND_ATTACK_TARGETS (6 | SEARCH_STATE_BIT)
+        #define SHOW_TARGETS (7)
+        #define FIND_ENEMY_MOVE_TARGETS (8 | SEARCH_STATE_BIT)
+        #define FIND_ENEMY_ZOC (9 | SEARCH_STATE_BIT)
+        #define FIND_FRIENDLY_ZOC (10 | SEARCH_STATE_BIT)
+        #define WON_CAMPAIGN (11)
+        #define WON_LEVEL (12)
+        #define FAIL_LEVEL (13)
+        #define FIND_FRIENDLY_FOV (14 | SEARCH_STATE_BIT)
+        #define SELECT_ENEMY_UNIT_TO_MOVE (15 | SEARCH_STATE_BIT)
+        #define FIND_ENEMY_ATTACK_TARGETS (16 | SEARCH_STATE_BIT)
+        #define FIND_FRIENDLY_THREAT (17 | SEARCH_STATE_BIT)
+        #define FIND_ENEMY_THREAT (18 | SEARCH_STATE_BIT)
+        #define FIND_ENEMY_VALUE (19| SEARCH_STATE_BIT)
 
 #ifdef DEBUG
     byte debugPlace = NO_UNIT;
 
-    private final static byte NONE_SEARCH_STATE_MASK = 63;
+#define NONE_SEARCH_STATE_MASK (63)
     private final static String[] stateNames
     = new String[] {"0",
                     "NEW_LEVEL",
@@ -305,50 +373,48 @@ public class G
                    };
 #endif
 
-    private final static byte MARK_NONE = -1;
-    private final static byte MARK_SELECTED = BITMAP_SELECTED;
-    private final static byte MARK_MOVE_TARGET = BITMAP_MOVE_TARGET;
-    private final static byte MARK_ATTACK_TARGET = BITMAP_ATTACK_TARGET;
+    #define MARK_NONE (-1)
+    #define MARK_SELECTED (BITMAP_SELECTED)
+    #define MARK_MOVE_TARGET (BITMAP_MOVE_TARGET)
+    #define MARK_ATTACK_TARGET (BITMAP_ATTACK_TARGET)
 
     private int level = 0;
 
-    private final static byte MAP_TERRAIN_LAYER = 0;
-    private final static byte MAP_FRIENDLY_UNIT_LAYER = 1;
-    private final static byte MAP_MARK_LAYER = 2;
-    private final static byte MAP_FRIENDLY_MOVED_LAYER = 3;
-    private final static byte MAP_FRIENDLY_FOV_LAYER = 4;
-    private final static byte MAP_ENEMY_UNIT_LAYER = 5;
-    private final static byte MAP_ZOC_LAYER = 6;
-    private final static byte MAP_MOVE_COST_LAYER = 7;
-    private final static byte MAP_RANGE_LAYER = 8;
-    private final static byte MAP_TMP_LAYER = 9;
-    private final static byte MAP_FRIENDLY_THREAT_LAYER = 10;
-    private final static byte MAP_ENEMY_THREAT_LAYER = 11;
-    private final static byte MAP_ENEMY_VALUE_LAYER = 12;
-    private final static byte MAP_ENEMY_MOVED_LAYER = 13;
-    private final static byte MAP_ATTACKED_LAYER = 14;
+#define MAP_TERRAIN_LAYER (0)
+    #define MAP_FRIENDLY_UNIT_LAYER (1)
+    #define MAP_MARK_LAYER (2)
+    #define MAP_FRIENDLY_MOVED_LAYER (3)
+    #define MAP_FRIENDLY_FOV_LAYER (4)
+    #define MAP_ENEMY_UNIT_LAYER (5)
+    #define MAP_ZOC_LAYER (6)
+    #define MAP_MOVE_COST_LAYER (7)
+    #define MAP_RANGE_LAYER (8)
+    #define MAP_TMP_LAYER (9)
+    #define MAP_FRIENDLY_THREAT_LAYER (10)
+    #define MAP_ENEMY_THREAT_LAYER (11)
+    #define MAP_ENEMY_VALUE_LAYER (12)
+    #define MAP_ENEMY_MOVED_LAYER (13)
+    #define MAP_ATTACKED_LAYER (14)
 
-    private final static int MAP_DATA_SIZE = 15;
-    private final static int MAP_DATA_TOTAL_SIZE
-        = MAP_COLUMNS * MAP_ROWS * MAP_DATA_SIZE;
-    private final byte[] map = new byte[MAP_DATA_TOTAL_SIZE];
+    #define MAP_DATA_SIZE (15)
+    #define MAP_DATA_TOTAL_SIZE (MAP_COLUMNS * MAP_ROWS * MAP_DATA_SIZE)
+    sized_byte_array(map, MAP_DATA_TOTAL_SIZE);
 
-    private final static byte FOV_RANGE =
 #ifdef DEBUG
-        20;
+#define FOV_RANGE 20
 #else
-    6;
+#define FOV_RANGE 6
 #endif
 
-    private final static int DEFENDER_FIRE_BACK = 6;
+    #define DEFENDER_FIRE_BACK (6)
 
     // ****** AI TWEAKS BEGIN
 
-    private final static byte DEFAULT_ZOC_VALUE = 10;
-    private final static byte VALUE_SEARCH_ITERATIONS = 10;
-    private final static byte THREAT_SEARCH_ITERATIONS = 10;
-    private final static byte CITY_VALUE = 30;
-    private final static byte ARTILLERY_DEFEND_VALUE = 5;
+    #define DEFAULT_ZOC_VALUE (10)
+    #define VALUE_SEARCH_ITERATIONS (10)
+    #define THREAT_SEARCH_ITERATIONS (10)
+    #define CITY_VALUE (30)
+    #define ARTILLERY_DEFEND_VALUE (5)
 
     // ****** AI TWEAKS END
 
@@ -366,14 +432,12 @@ public class G
      * All units have a movement allowance of 12, but different costs
      * for different terrain types.
      */
-    private final static int UNIT_THREAT = 5;
+    #define UNIT_THREAT (5)
 
-    private final static int UNIT_RANGE_OFFSET = 0;
-    private final static int UNIT_MOVE_OFFSET = 1;
-    private final static int UNIT_SIZE
-        = UNIT_MOVE_OFFSET + 1;
-    private final byte[] unitData = new byte[]
-        {
+    #define UNIT_RANGE_OFFSET (0)
+    #define UNIT_MOVE_OFFSET (1)
+    #define UNIT_SIZE (UNIT_MOVE_OFFSET + 1)
+    const_byte_array(unitData) = new_byte_array {
             //INFANTRY
             2, 5,
             //TANK
@@ -384,13 +448,17 @@ public class G
             2, 5
         };
 
+#ifdef JAVA
     public void start() {
+#else
+    void start() {
+#endif
         state = NEW_LEVEL;
         turn = 1;
 
-        Random mapRnd =  new Random(campaign[level * 3]);
-        Random funitsRnd =  new Random(campaign[level * 3 + 1]);
-        Random eunitsRnd =  new Random(campaign[level * 3 + 2]);
+        new_random(mapRnd, campaign[level * 3]);
+        new_random(funitsRnd, campaign[level * 3 + 1]);
+        new_random(eunitsRnd, campaign[level * 3 + 2]);
 
 #ifdef DEBUG
         System.out.println("start level " + level
@@ -405,7 +473,7 @@ public class G
 
         for (int i = 0; i < MAP_DATA_TOTAL_SIZE; i += MAP_DATA_SIZE) {
             byte initTerrain = CLEAR;
-            if (mapRnd.nextInt(CITY_RARITY) == 0) {
+            if (random_int(mapRnd, CITY_RARITY) == 0) {
                 initTerrain = CITY;
             }
             map[i + MAP_TERRAIN_LAYER] = initTerrain;
@@ -416,10 +484,10 @@ public class G
 
         int i = 0;
         // add 0-2 rivers down hex columns (including render to bitmap)
-        int nrRivers = mapRnd.nextInt(MAX_NR_RIVERS);
+        int nrRivers = random_int(mapRnd, MAX_NR_RIVERS);
         for (int n = 0; n < nrRivers; n++) {
            int c = FIRST_POSSIBLE_RIVER_COLUMN
-               + mapRnd.nextInt(MAP_COLUMNS - FIRST_POSSIBLE_RIVER_COLUMN);
+               + random_int(mapRnd, MAP_COLUMNS - FIRST_POSSIBLE_RIVER_COLUMN);
            for (int r = 0; r < MAP_ROWS; r++) {
                map[(c * MAP_ROWS + r) * MAP_DATA_SIZE + MAP_TERRAIN_LAYER]
                    = WATER;
@@ -428,7 +496,7 @@ public class G
 
         int firstEnemyColumn = CAMPAIGN_FRIENDLY_COLUMNS
             + CAMPAIGN_MIN_NML
-            + funitsRnd.nextInt(MAP_COLUMNS / 4);
+            + random_int(funitsRnd, MAP_COLUMNS / 4);
         i = 0;
         for (int c = 0; c < MAP_COLUMNS - 1; c++) {
             for (int r = 0; r < MAP_ROWS; r++) {
@@ -444,7 +512,7 @@ public class G
                     if (map[i - MAP_DATA_SIZE + MAP_TERRAIN_LAYER] == WOODS) {
                         woods_percentage += WOODS_SPREAD;
                     }
-                    if (mapRnd.nextInt(100) < woods_percentage) {
+                    if (random_int(mapRnd, 100) < woods_percentage) {
                         terrain = WOODS;
                     }
                 }
@@ -452,10 +520,10 @@ public class G
                 byte unit = NO_UNIT;
 
                 if ((c < CAMPAIGN_FRIENDLY_COLUMNS
-                     || level == 3 && c > (MAP_COLUMNS
-                                           - CAMPAIGN_FRIENDLY_COLUMNS))
-                    && r > 0) {
-                    int u = funitsRnd.nextInt(100);
+                     || (level == 3 && c > (MAP_COLUMNS
+                                            - CAMPAIGN_FRIENDLY_COLUMNS)))
+                     && r > 0) {
+                    int u = random_int(funitsRnd, 100);
                     if (u < CAMPAIGN_FRIENDLY_ENGINEER) {
                         unit = ENGINEER;
                     }
@@ -474,12 +542,12 @@ public class G
                         map[i + MAP_FRIENDLY_FOV_LAYER] = 1;
                     }
                 } else if (c >= firstEnemyColumn) { // enemy territory
-                    int u = eunitsRnd.nextInt(1000);
+                    int u = random_int(eunitsRnd, 1000);
                     if (terrain == CITY || u < CAMPAIGN_ENEMY_INFANTRY) {
                         if (map[i + MAP_ROWS * MAP_DATA_SIZE
                                 + MAP_TERRAIN_LAYER] != WATER) {
                             // add some artillery behind city
-                            if (eunitsRnd.nextInt(2) == 0
+                            if (random_int(eunitsRnd, 2) == 0
                                 && terrain == CITY) {
                                 map[i + MAP_ROWS * MAP_DATA_SIZE
                                     + MAP_ENEMY_UNIT_LAYER] = ARTILLERY;
@@ -500,7 +568,7 @@ public class G
                     if (terrain == WATER) {
                         if (map[i + MAP_ROWS * MAP_DATA_SIZE
                                 + MAP_TERRAIN_LAYER] != WATER) {
-                            if (eunitsRnd.nextInt(100) < RIVER_LINE_GARRISON) {
+                            if (random_int(eunitsRnd, 100) < RIVER_LINE_GARRISON) {
                                 unit = INFANTRY;
                             }
                             map[i + MAP_ROWS * MAP_DATA_SIZE
@@ -516,63 +584,73 @@ public class G
         repaint();
     }
 
+#ifdef JAVA
     public void update(Graphics g) {
         paint(g);
     }
+#endif
 
+#ifdef JAVA
     public void paint(Graphics pg) {
+#else
+    void paint() {
+#endif
         /*
          * paint map terrain
          * paint units
          * paint marks
          */
 
+#ifdef JAVA
 #ifdef PRINTABLE
         Graphics g = pg;
 #else
         Image bufferImage = createImage(SCREEN_WIDTH, SCREEN_HEIGHT);
         Graphics g = bufferImage.getGraphics();
 #endif
+#endif
 
-        Random drawRnd = new Random(0);
+#ifdef C
+#endif
+
+       new_random(drawRnd, 0);
 
 #ifdef PRINTABLE
-        g.setColor(Color.white);
+        set_color(WHITE);
 #else
-        Color black = new Color(0);
-	g.setColor(black);
+	set_color(BLACK);
 #endif
-        g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        fill_rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-#ifndef PRINTABLE
+#if defined(JAVA) && !defined(PRINTABLE)
         // draw the "status bar" and "end turn button"
-        g.setColor(new Color(0xffffff));
+        set_color(0xffffff);
         // adding strings is expensive they say
-        g.drawString("TURN      / 15",
+        draw_string("TURN      / 15",
                      SCREEN_TURN_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
-        g.drawString(Integer.toString(turn),
+        draw_string(Integer.toString(turn),
                      SCREEN_TURN_NR_X, SCREEN_STATUS_BAR_TEXT_Y);
-        g.drawString("MAP", SCREEN_LEVEL_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
-        g.drawString(Integer.toString(level + 1),
+        draw_string("MAP", SCREEN_LEVEL_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
+        draw_string(Integer.toString(level + 1),
                      SCREEN_LEVEL_NR_X, SCREEN_STATUS_BAR_TEXT_Y);
         if (state == FAIL_LEVEL) {
-            g.drawString("FAIL", SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
+            draw_string("FAIL", SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
         }
         if (state == WON_LEVEL) {
-            g.drawString("WON", SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
+            draw_string("WON", SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
         }
         if (state == WON_CAMPAIGN) {
-            g.drawString("WON ALL",
+            draw_string("WON ALL",
                          SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
         }
 
-        g.setColor(new Color(COLOR_FRIENDLY_BORDER));
-        g.fillRect(SCREEN_BUTTON_X, 0, SCREEN_WIDTH, SCREEN_BUTTON_HEIGHT);
-        g.setColor(new Color(COLOR_FRIENDLY_BACKGROUND));
-        g.fillRect(SCREEN_BUTTON_X + 2, 2,
+        set_color(COLOR_FRIENDLY_BORDER);
+        fill_rect(SCREEN_BUTTON_X, 0, SCREEN_WIDTH, SCREEN_BUTTON_HEIGHT);
+        set_color(COLOR_FRIENDLY_BACKGROUND);
+        fill_rect(SCREEN_BUTTON_X + 2, 2,
                    SCREEN_WIDTH - 4, SCREEN_BUTTON_HEIGHT - 4);
-        g.setColor(new Color(0xffffff));
-        g.drawString(">>", SCREEN_BUTTON_TEXT_X,
+        set_color(0xffffff);
+        draw_string(">>", SCREEN_BUTTON_TEXT_X,
                      SCREEN_STATUS_BAR_TEXT_Y - 2);
 #endif
 
@@ -586,27 +664,27 @@ public class G
 
                 // **** draw hexagon begin ****
 #ifdef PRINTABLE
-                g.setColor(Color.black);
-                g.fillRect(x - HEX_WIDTH / 4, y - HEX_HEIGHT / 2 - ZOOM,
+                set_color(BLACK);
+                fill_rect(x - HEX_WIDTH / 4, y - HEX_HEIGHT / 2 - ZOOM,
                            HEX_WIDTH / 2 + 1, HEX_HEIGHT + ZOOM * 2);
 #endif
 
-                g.setColor(new Color(COLOR_OPEN));
+                set_color(COLOR_OPEN);
 
                 for (int hx = 0; hx <= HEX_WIDTH / 4; hx++) {
                     int hy = hx * 155 / 100; // hex slope 60 degrees
 #ifdef PRINTABLE
-                    g.setColor(Color.black);
-                    g.fillRect(x - HEX_WIDTH / 2 + hx - ZOOM,
-                               y - hy + 2,
-                               (HEX_WIDTH / 2 - hx) * 2 + 2 * ZOOM,
-                               hy * 2 - ZOOM);
-                    g.setColor(new Color(COLOR_OPEN));
+                    set_color(BLACK);
+                    fill_rect(x - HEX_WIDTH / 2 + hx - ZOOM,
+                              y - hy + 2,
+                              (HEX_WIDTH / 2 - hx) * 2 + 2 * ZOOM,
+                              hy * 2 - ZOOM);
+                    set_color(COLOR_OPEN);
 #endif
-                    g.fillRect(x - HEX_WIDTH / 2 + hx,
-                               y - hy + 2,
-                               (HEX_WIDTH / 2 - hx) * 2,
-                               hy * 2 - ZOOM);
+                    fill_rect(x - HEX_WIDTH / 2 + hx,
+                              y - hy + 2,
+                              (HEX_WIDTH / 2 - hx) * 2,
+                              hy * 2 - ZOOM);
                 }
                 // **** draw hexagon end ****
 
@@ -615,17 +693,17 @@ public class G
                      a < terrainData[td + TERRAIN_DRAW_AMOUNT_OFFSET];
                      a++) {
                     int terrainColor =
-                        terrainData[td + drawRnd.nextInt(2)]; //cheating
+                        terrainData[td + random_int(drawRnd, 2)]; //cheating
                     int xSpread
                         = terrainData[td + TERRAIN_DRAW_X_SPREAD_OFFSET];
-                    int tx = x - xSpread / 2 + drawRnd.nextInt(xSpread);
-                    int ty = y - HEX_HEIGHT / 2 + drawRnd.nextInt(HEX_HEIGHT);
+                    int tx = x - xSpread / 2 + random_int(drawRnd, xSpread);
+                    int ty = y - HEX_HEIGHT / 2 + random_int(drawRnd, HEX_HEIGHT);
                     int w = terrainData[td + TERRAIN_DRAW_WIDTH_OFFSET] * ZOOM;
                     int h = terrainData[td + TERRAIN_DRAW_HEIGHT_OFFSET] * ZOOM;
                     tx -= w / 2;
                     ty -= h / 2;
-                    g.setColor(new Color(terrainColor));
-                    g.fillRect(tx, ty, w, h);
+                    set_color(terrainColor);
+                    fill_rect(tx, ty, w, h);
                 }
 
 
@@ -661,7 +739,6 @@ public class G
 
                 markImage = map[i + MAP_MARK_LAYER];
                 if (markImage != MARK_NONE) {
-                    int mi;
                     switch (markImage) {
                         case MARK_SELECTED:
                             markColor = COLOR_RED_2;
@@ -688,11 +765,11 @@ public class G
 
 #ifndef PRINTABLE
                 if (unitImage >= 0) {
-                    g.setColor(new Color(borderColor));
-                    g.fillRect(x - BITMAP_WIDTH / 2 - UNIT_BORDER_WIDTH,
-                               y - BITMAP_HEIGHT / 2 - UNIT_BORDER_WIDTH,
-                               BITMAP_WIDTH + 2 * UNIT_BORDER_WIDTH,
-                               BITMAP_HEIGHT + 2 * UNIT_BORDER_WIDTH);
+                    set_color(borderColor);
+                    fill_rect(x - BITMAP_WIDTH / 2 - UNIT_BORDER_WIDTH,
+                              y - BITMAP_HEIGHT / 2 - UNIT_BORDER_WIDTH,
+                              BITMAP_WIDTH + 2 * UNIT_BORDER_WIDTH,
+                              BITMAP_HEIGHT + 2 * UNIT_BORDER_WIDTH);
                 }
 
                 /* idr = image data row, idc = image data column */
@@ -701,12 +778,12 @@ public class G
                         int color = -1;
                         if (unitImage >= 0) {
                             color = unitColor;
-                            if (BITMAP_DATA.charAt(unitImage) == 'x') {
+                            if (char_at(BITMAP_DATA, unitImage) == 'x') {
                                 color = 0;
                             }
                         }
                         if (markImage >= 0
-                            && BITMAP_DATA.charAt(markImage) == 'x') {
+                            && char_at(BITMAP_DATA, markImage) == 'x') {
                             color = markColor;
                         }
                         if (color >= 0) {
@@ -714,14 +791,13 @@ public class G
                             if (mirror) {
                                 cx = BITMAP_DATA_WIDTH - cx - 1;
                             }
-                            g.setColor(new Color(color));
+                            set_color(color);
                             int x1 = x - BITMAP_WIDTH / 2
                                 + cx * BITMAP_SCALE;
                             int y1 = y - BITMAP_HEIGHT / 2
                                 + idr * BITMAP_SCALE;
-                            g.fillRect(
-                                x1, y1,
-                                BITMAP_SCALE, BITMAP_SCALE);
+                            fill_rect(x1, y1,
+                                      BITMAP_SCALE, BITMAP_SCALE);
                         }
                         markImage++;
                         unitImage++;
@@ -732,10 +808,10 @@ public class G
 
 #ifdef DEBUG_ZOC
                 if (map[i + MAP_ZOC_LAYER] > 0) {
-                    g.setColor(Color.RED);
-                    g.fillRect(x - BITMAP_WIDTH / 2 - 2,
-                               y - BITMAP_WIDTH / 2 - 2,
-                               4 * map[i + MAP_ZOC_LAYER], 4);
+                    set_color(RED);
+                    fill_rect(x - BITMAP_WIDTH / 2 - 2,
+                              y - BITMAP_WIDTH / 2 - 2,
+                              4 * map[i + MAP_ZOC_LAYER], 4);
                 }
 #endif
 
@@ -745,10 +821,10 @@ int debugY = y - BITMAP_HEIGHT / 2 + 1;
 for (int layer = MAP_FRIENDLY_THREAT_LAYER;
      layer <= MAP_ENEMY_VALUE_LAYER;
      layer++) {
-    g.setColor(new Color(colors[layer - MAP_FRIENDLY_THREAT_LAYER]));
-    g.fillRect(x - BITMAP_WIDTH / 2,
-               debugY,
-               map[i + layer] / 5, 2);
+    set_color(colors[layer - MAP_FRIENDLY_THREAT_LAYER]);
+    fill_rect(x - BITMAP_WIDTH / 2,
+              debugY,
+              map[i + layer] / 5, 2);
     debugY += 2;
 }
 #endif
@@ -759,13 +835,14 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         }
 
 #ifdef PRINTABLE
-        g.setColor(Color.white);
+        set_color(WHITE);
         fillAboveBelowColumns(g);
 #else
-        pg.drawImage(bufferImage, 0, 0, this);
+    blit_buffer();
 #endif
     }
 
+#ifdef JAVA
     public boolean handleEvent(Event e) {
 #ifdef DEBUG
     boolean instantWin = false;
@@ -826,6 +903,17 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
 #endif
         }
 
+#endif // JAVA
+#ifdef C
+
+    typedef struct EventStruct {
+        int x;
+        int y;
+    } Event;
+
+    bool handleEvent() {
+        Event e;
+#endif
         // -------------- if we get here the event is a mouse click ----------
 
         if (e.y < SCREEN_BUTTON_HEIGHT
@@ -932,7 +1020,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         */
         int searchLayer = MAP_RANGE_LAYER;
 
-        Random rnd = new Random();
+        new_random(rnd, 0);
 
         /**
          * What unit type we are searching for now, since that required
@@ -964,6 +1052,9 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
            searchUnit = map[iClicked + MAP_FRIENDLY_UNIT_LAYER];
            searchUnitIndex = (searchUnit - 1) * UNIT_SIZE;
        } else if (state == SHOW_TARGETS) {
+           int terrain;
+           int multiplier;
+           int dr;
            // marks temporarily saved in TMP
            searchUnit = map[iPrevSelected + MAP_FRIENDLY_UNIT_LAYER];
            searchUnitIndex = (searchUnit - 1) * UNIT_SIZE;
@@ -978,18 +1069,16 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                case MARK_ATTACK_TARGET:
                    // FIXME move combat code to somewhere at end of method
                    // where it can be shared with AI attacks
-                   int terrain = map[iClicked + MAP_TERRAIN_LAYER];
-                   int au = map[iClicked + MAP_ENEMY_UNIT_LAYER];
-                   int attackedUnitIndex = (au - 1) * UNIT_SIZE;
-                   int multiplier = terrainData[terrain * TERRAIN_DATA_SIZE
+                   terrain = map[iClicked + MAP_TERRAIN_LAYER];
+                   multiplier = terrainData[terrain * TERRAIN_DATA_SIZE
                                                 + TERRAIN_DEFENSE_OFFSET];
                    // if target has already been attacked this turn
                    if (map[iClicked + MAP_ATTACKED_LAYER] > 0
-                       || terrain == CITY && searchUnit == ENGINEER) {
+                       || (terrain == CITY && searchUnit == ENGINEER)) {
                        multiplier *= 2;
                    }
 
-                   int dr = rnd.nextInt(20); // roll a d20!
+                   dr = random_int(rnd, 20); // roll a d20!
                    if (dr < multiplier) { // defender eliminated
                        map[iClicked + MAP_ENEMY_UNIT_LAYER] = 0;
                    }
@@ -1001,7 +1090,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                    // defender unit can fire back once per turn only
                    if (map[iClicked + MAP_ATTACKED_LAYER] == 0
                        && searchUnit != ARTILLERY) {
-                       dr = rnd.nextInt(20); // roll d20 for defender firing
+                       dr = random_int(rnd, 20); // roll d20 for defender firing
 #ifdef DEBUG
                        System.out.println("enemy to hit: " + DEFENDER_FIRE_BACK
                                           + " dr: " + dr);
@@ -1196,7 +1285,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                         byte v = map[i + MAP_TMP_LAYER];
                         if (v > 1) {
                             // find all adjacent hexes
-                            int[] adj = new int[] {-1, -1, -1, -1, -1, -1};
+                            int_array(adj) = new_int_array {-1, -1, -1, -1, -1, -1};
 
                             /*
                              * I'm starting to think maybe I should have
@@ -1326,7 +1415,6 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
             }
 
             for (i = 0; i < MAP_DATA_TOTAL_SIZE; i += MAP_DATA_SIZE) {
-                byte v = map[i + searchLayer];
                 if ((onlyKeepLayer >= 0
                      && map[i + onlyKeepLayer] == 0)
                     || (notKeepLayer >= 0
@@ -1337,6 +1425,10 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
 
             // for finding best enemy action in state FIND_ENEMY_ATTACK_TARGETS
             int bestValue = 0;
+            int terrain;
+            int multiplier;
+            int dr;
+            byte u;
 
             for (i = 0; i < MAP_DATA_TOTAL_SIZE; i += MAP_DATA_SIZE) {
                 if (setFoundInLayer >= 0) {
@@ -1409,7 +1501,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                       + iPrevSelected + " to " + iClicked
                       + " mark: " + map[iClicked + MAP_TMP_LAYER]);
 #endif
-                    byte u = map[iPrevSelected + MAP_ENEMY_UNIT_LAYER];
+                    u = map[iPrevSelected + MAP_ENEMY_UNIT_LAYER];
 
                     switch (map[iClicked + MAP_TMP_LAYER]) {
                         case MARK_MOVE_TARGET:
@@ -1417,10 +1509,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             map[iClicked + MAP_ENEMY_UNIT_LAYER] = u;
                             break;
                         case MARK_ATTACK_TARGET:
-                            int terrain = map[iClicked + MAP_TERRAIN_LAYER];
-                            int au = map[iClicked + MAP_FRIENDLY_UNIT_LAYER];
-                            int attackedUnitIndex = (au - 1) * UNIT_SIZE;
-                            int multiplier = terrainData[
+                            terrain = map[iClicked + MAP_TERRAIN_LAYER];
+                            multiplier = terrainData[
                                 terrain * TERRAIN_DATA_SIZE
                                 + TERRAIN_DEFENSE_OFFSET];
 
@@ -1428,7 +1518,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             if (map[iClicked + MAP_ATTACKED_LAYER] > 0) {
                                 multiplier *= 2;
                             }
-                            int dr = rnd.nextInt(20); // roll a d20!
+                            dr = random_int(rnd, 20); // roll a d20!
                             if (dr < multiplier) { // defender eliminated
                                 map[iClicked + MAP_FRIENDLY_UNIT_LAYER] = 0;
                             }
@@ -1441,7 +1531,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             // but not at artillery
                             if (map[iClicked + MAP_ATTACKED_LAYER] > 0
                                 && u != ARTILLERY) {
-                                dr = rnd.nextInt(20);
+                                dr = random_int(rnd, 20);
 #ifdef DEBUG
                                 System.out.println("enemy to hit: "
                                                    + DEFENDER_FIRE_BACK
@@ -1510,7 +1600,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
 	return false;
     }
 
-#ifdef DEBUG
+#if defined(JAVA) && defined(DEBUG)
 
 private void debugNextRandomMap() {
     campaign[level * 3]++;
@@ -1550,6 +1640,30 @@ public static void main(String[] args) {
 }
 #endif
 
+#if defined(C) && defined(SDL)
+    int main(int argc, char *argv[]) {
+        printf("General 4C\n");
+        printf("%dx%d\n", SCREEN_WIDTH, SCREEN_HEIGHT);
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            fprintf(stderr, "Failed to init SDL.");
+            return 1;
+        }
+        window = SDL_CreateWindow("General 4C",
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SCREEN_WIDTH, SCREEN_HEIGHT,
+                                  SDL_WINDOW_SHOWN );
+        if(window == NULL) {
+            fprintf(stderr, "Failed to create SDL window: %s\n",
+                    SDL_GetError());
+            return 1;
+        }
+        screen = SDL_GetWindowSurface(window);
+        while (true);
+        return 0;
+    }
+#endif
+
 #ifdef PRINTABLE
     public static void main(String[] args) throws Exception {
         G g = new G();
@@ -1574,16 +1688,19 @@ public static void main(String[] args) {
             int yBottom = SCREEN_HEIGHT
                 - ((c % 2 == 0) ? 0 : MAP_EVEN_ROW_LAYER) - HEX_HEIGHT / 2
                 + ZOOM - 2;
-            g.fillRect(x - width / 2,
-                       0,
-                       width,
-                       yTop);
-            g.fillRect(x - width / 2,
-                       yBottom,
-                       width,
-                       HEX_HEIGHT);
+            fill_rect(x - width / 2,
+                      0,
+                      width,
+                      yTop);
+            fill_rect(x - width / 2,
+                      yBottom,
+                      width,
+                      HEX_HEIGHT);
         }
     }
 
 #endif
+
+#ifdef JAVA
 }
+#endif

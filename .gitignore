@@ -6,3 +6,6 @@
 make.*
 env.*
 tmp
+G.c
+*.o
+general4c
