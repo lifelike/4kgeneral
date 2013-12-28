@@ -122,21 +122,43 @@ public class G
 #define new_random(name, seed)
 #define random_int(name, limit) (rand() % limit)
 
-#define set_color(c) fprintf(stderr, "set_color %x\n", c)
-#define fill_rect(x, y, w, h) fprintf(stderr, "fill_rect %d %d %d %d", x, y, w, h)
-#define blit_buffer()
-#define draw_string(s, x, y) fprintf(stderr, "draw_string %s %d %d", s, x, y)
-
 #ifdef SDL
     #include <SDL.h>
 
     SDL_Window *window = NULL;
     SDL_Surface *screen = NULL;
+    Uint32 color = 0;
+
+    #define fill_rect(x, y, w, h) fill_sdl_rect(x, y, w, h)
+#define blit_buffer() SDL_UpdateWindowSurface(window)
+#define draw_string(s, x, y) fprintf(stderr, "draw_string %s %d %d", s, x, y)
+
+#define set_color(c) color = make_color(c)
+
+// convert from 0x00rrggbb to SDL screen pixel format
+// FIXME currently assuming screen already has input format
+Uint32 make_color(Uint32 c) {
+    return c;
+}
+
+void fill_sdl_rect(int x, int y, int w, int h) {
+    SDL_Rect rect;
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
+    SDL_FillRect(screen, &rect, color);
+}
 
 void repaint() {
 }
 
 #else
+
+#define set_color(c)
+#define fill_rect(x, y, w, h)
+#define blit_buffer()
+#define draw_string(s, x, y)
 
 void repaint() {
 }
@@ -1660,6 +1682,9 @@ public static void main(String[] args) {
         }
         screen = SDL_GetWindowSurface(window);
         while (true);
+
+        SDL_DestroyWindow(window);
+
         return 0;
     }
 #endif
