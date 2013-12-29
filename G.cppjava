@@ -122,6 +122,8 @@ public class G
 #define new_random(name, seed)
 #define random_int(name, limit) (rand() % limit)
 
+void paint();
+
 #ifdef SDL
     #include <SDL.h>
 
@@ -151,6 +153,7 @@ void fill_sdl_rect(int x, int y, int w, int h) {
 }
 
 void repaint() {
+    paint();
 }
 
 #else
@@ -161,6 +164,7 @@ void repaint() {
 #define draw_string(s, x, y)
 
 void repaint() {
+    paint();
 }
 
 #endif
@@ -933,8 +937,12 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         int y;
     } Event;
 
-    bool handleEvent() {
+    bool handle_mouse_event(int mx, int my) {
         Event e;
+        e.x = mx;
+        e.y = my;
+
+        fprintf(stderr, "mouse event: %d %d\n", mx, my);
 #endif
         // -------------- if we get here the event is a mouse click ----------
 
@@ -1681,7 +1689,17 @@ public static void main(String[] args) {
             return 1;
         }
         screen = SDL_GetWindowSurface(window);
-        while (true);
+        while (true) {
+#ifdef SDL
+            SDL_Event sdlevent;
+            SDL_WaitEvent(&sdlevent);
+            if (sdlevent.type == SDL_MOUSEBUTTONDOWN) {
+                handle_mouse_event(sdlevent.button.x, sdlevent.button.y);
+            } else if (sdlevent.type == SDL_QUIT) {
+                break;
+            }
+#endif
+        }
 
         SDL_DestroyWindow(window);
 
