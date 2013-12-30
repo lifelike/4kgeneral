@@ -1682,6 +1682,7 @@ public static void main(String[] args) {
             return 1;
         }
         screen = SDL_GetWindowSurface(window);
+        start();
         while (true) {
 #ifdef SDL
             SDL_Event sdlevent;
