@@ -119,7 +119,7 @@ public class G
 #define byte signed char
 #define char_at(a, i) a[i]
 
-#define new_random(name, seed)
+#define new_random(name, seed) srand(seed)
 #define random_int(name, limit) (rand() % limit)
 
 void paint();
