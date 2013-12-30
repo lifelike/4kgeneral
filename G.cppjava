@@ -124,6 +124,10 @@ public class G
 
 void paint();
 
+void repaint() {
+    paint();
+}
+
 #ifdef SDL
     #include <SDL.h>
 
@@ -152,20 +156,12 @@ void fill_sdl_rect(int x, int y, int w, int h) {
     SDL_FillRect(screen, &rect, color);
 }
 
-void repaint() {
-    paint();
-}
-
 #else
 
 #define set_color(c)
 #define fill_rect(x, y, w, h)
 #define blit_buffer()
 #define draw_string(s, x, y)
-
-void repaint() {
-    paint();
-}
 
 #endif
 
@@ -634,9 +630,6 @@ void repaint() {
         Image bufferImage = createImage(SCREEN_WIDTH, SCREEN_HEIGHT);
         Graphics g = bufferImage.getGraphics();
 #endif
-#endif
-
-#ifdef C
 #endif
 
        new_random(drawRnd, 0);
