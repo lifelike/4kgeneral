@@ -133,13 +133,13 @@ void repaint() {
 
     SDL_Window *window = NULL;
     SDL_Surface *screen = NULL;
-    Uint32 color = 0;
+    Uint32 global_color = 0;
 
     #define fill_rect(x, y, w, h) fill_sdl_rect(x, y, w, h)
 #define blit_buffer() SDL_UpdateWindowSurface(window)
 #define draw_string(s, x, y) fprintf(stderr, "draw_string %s %d %d", s, x, y)
 
-#define set_color(c) color = make_color(c)
+#define set_color(c) global_color = make_color(c)
 
 // convert from 0x00rrggbb to SDL screen pixel format
 // FIXME currently assuming screen already has input format
@@ -153,7 +153,7 @@ void fill_sdl_rect(int x, int y, int w, int h) {
     rect.y = y;
     rect.w = w;
     rect.h = h;
-    SDL_FillRect(screen, &rect, color);
+    SDL_FillRect(screen, &rect, global_color);
 }
 
 #else
@@ -935,7 +935,6 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         e.x = mx;
         e.y = my;
 
-        fprintf(stderr, "mouse event: %d %d\n", mx, my);
 #endif
         // -------------- if we get here the event is a mouse click ----------
 
