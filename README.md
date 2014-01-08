@@ -66,7 +66,7 @@ e - next random enemy units setup (and restart level)
 E - previous random enemy units setup (and restart level)
 ESC - quit
 
-SCENARIO DESIGN
+Scenario Design
 ---------------
 The random map, friendly, and enemy setup values output when
 a level begins (that you can change with the special debug
@@ -77,7 +77,18 @@ of the map. Other than that any scenario setup can be used in any
 position in the campaign. To have a campaign longer than 12 scenarios,
 increase the LAST_CAMPAIGN_SCENARIO constant.
 
-LICENSE
+C/SDL Desktop Port
+==================
+Using even more preprocessor-hacks the code also can be compiled with
+a C compiler and SDL 2.0. Running *make general4c* should make the
+desktop version if you have *sdl2-config* installed and the proper
+configuration (see example.make).
+
+TODO
+====
+- Support running general4c from directory not including font.bmp.
+
+License
 =======
 (C) Copyright 2012, 2013 Pelle Nilsson
 
@@ -102,3 +113,9 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+FONT
+====
+The bitmap font in font.bmp used in the C port is made by gnsh and
+available here under the Creative Commons Zero license:
+http://opengameart.org/content/bitmap-font-0

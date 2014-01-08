@@ -99,6 +99,7 @@ public class G
 
 #ifdef C
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -133,11 +134,12 @@ void repaint() {
 
     SDL_Window *window = NULL;
     SDL_Surface *screen = NULL;
+    SDL_Surface *font = NULL;
     Uint32 global_color = 0;
 
-    #define fill_rect(x, y, w, h) fill_sdl_rect(x, y, w, h)
+#define fill_rect(x, y, w, h) fill_sdl_rect(x, y, w, h)
 #define blit_buffer() SDL_UpdateWindowSurface(window)
-#define draw_string(s, x, y) fprintf(stderr, "draw_string %s %d %d", s, x, y)
+#define draw_string(s, x, y) draw_sdl_string(s, x, y)
 
 #define set_color(c) global_color = make_color(c)
 
@@ -154,6 +156,29 @@ void fill_sdl_rect(int x, int y, int w, int h) {
     rect.w = w;
     rect.h = h;
     SDL_FillRect(screen, &rect, global_color);
+}
+
+#define SDL_FONT_CHAR_WIDTH 10
+#define SDL_FONT_CHAR_HEIGHT 24
+#define SDL_FONT_CHAR_BASELINE 18
+#define SDL_FONT_CHARS_PER_ROW 20
+#define SDL_FONT_START_CHAR 32
+
+void draw_sdl_string(char *s, int x, int y) {
+    SDL_Rect src;
+    SDL_Rect dst;
+    src.w = SDL_FONT_CHAR_WIDTH;
+    src.h = SDL_FONT_CHAR_HEIGHT;
+    for (int i = 0; i < strlen(s); i++) {
+        int c = s[i] - SDL_FONT_START_CHAR;
+        src.x = (c % SDL_FONT_CHARS_PER_ROW) * SDL_FONT_CHAR_WIDTH;
+        src.y = (c / SDL_FONT_CHARS_PER_ROW) * SDL_FONT_CHAR_HEIGHT;
+        src.w = SDL_FONT_CHAR_WIDTH;
+        src.h = SDL_FONT_CHAR_HEIGHT;
+        dst.x = x + i * SDL_FONT_CHAR_WIDTH;
+        dst.y = y - SDL_FONT_CHAR_BASELINE;
+        SDL_BlitSurface(font, &src, screen, &dst);
+    }
 }
 
 #else
@@ -641,9 +666,12 @@ void fill_sdl_rect(int x, int y, int w, int h) {
 #endif
         fill_rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-#if defined(JAVA) && !defined(PRINTABLE)
+#if !defined(PRINTABLE)
+
         // draw the "status bar" and "end turn button"
         set_color(0xffffff);
+
+#if defined(JAVA)
         // adding strings is expensive they say
         draw_string("TURN      / 15",
                      SCREEN_TURN_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
@@ -652,6 +680,13 @@ void fill_sdl_rect(int x, int y, int w, int h) {
         draw_string("MAP", SCREEN_LEVEL_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
         draw_string(Integer.toString(level + 1),
                      SCREEN_LEVEL_NR_X, SCREEN_STATUS_BAR_TEXT_Y);
+#elif defined(C)
+        char *turn_string = malloc(100);
+        snprintf(turn_string, 100, "TURN %d/15", turn);
+        draw_string(turn_string, SCREEN_TURN_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
+        free(turn_string);
+#endif
+
         if (state == FAIL_LEVEL) {
             draw_string("FAIL", SCREEN_MESSAGE_X, SCREEN_STATUS_BAR_TEXT_Y);
         }
@@ -672,7 +707,6 @@ void fill_sdl_rect(int x, int y, int w, int h) {
         draw_string(">>", SCREEN_BUTTON_TEXT_X,
                      SCREEN_STATUS_BAR_TEXT_Y - 2);
 #endif
-
         int i = 0;
         int x = MAP_FIRST_COLUMN_CENTER_X;
         for (int c = 0; c < MAP_COLUMNS; c++) {
@@ -1681,6 +1715,13 @@ public static void main(String[] args) {
             return 1;
         }
         screen = SDL_GetWindowSurface(window);
+        assert(screen != NULL);
+        font = SDL_LoadBMP("font.bmp"); //FIXME search more locations
+        if (font == NULL) {
+            fprintf(stderr, "Failed to load 'font.bmp': %s\n",
+                    SDL_GetError());
+            return 1;
+        }
         start();
         while (true) {
 #ifdef SDL
