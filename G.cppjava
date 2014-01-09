@@ -87,7 +87,8 @@ public class G
 #define new_int_array new int[]
 #define char_at(a, i) a.charAt(i)
 
-#define new_random(name, seed) Random name = new Random(seed)
+#define declare_random(name) Random name
+#define init_random(name, seed) name = new Random(seed)
 #define random_int(name, limit) name .nextInt(limit)
 
 #define set_color(c) g.setColor(new Color(c))
@@ -100,6 +101,7 @@ public class G
 #ifdef C
 
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -110,18 +112,21 @@ public class G
 
 #define private
 #define boolean bool
-#define const_byte_array(name) signed char name[]
+#define const_byte_array(name) int8_t name[]
 #define new_byte_array
-#define sized_byte_array(name, size) signed char name[size]
-#define const_int_array(name) int name[]
-#define int_array(name) int name[]
+#define sized_byte_array(name, size) int8_t name[size]
+#define const_int_array(name) int32_t name[]
+#define int_array(name) int32_t name[]
 #define new_int_array
 #define const_string(name) char name[]
-#define byte signed char
+#define byte int8_t
 #define char_at(a, i) a[i]
 
-#define new_random(name, seed) srand(seed)
-#define random_int(name, limit) (rand() % limit)
+#define RANDOM_STATE_SIZE 64
+
+#define declare_random(name) char name[RANDOM_STATE_SIZE]
+#define init_random(name, seed) initstate(seed, name, RANDOM_STATE_SIZE)
+#define random_int(name, limit) (setstate(name), random() % limit)
 
 void paint();
 
@@ -495,17 +500,23 @@ void draw_sdl_string(char *s, int x, int y) {
             2, 5
         };
 
+declare_random(rnd);
+
 #ifdef JAVA
     public void start() {
 #else
     void start() {
 #endif
+        declare_random(mapRnd);
+        declare_random(funitsRnd);
+        declare_random(eunitsRnd);
         state = NEW_LEVEL;
         turn = 1;
 
-        new_random(mapRnd, campaign[level * 3]);
-        new_random(funitsRnd, campaign[level * 3 + 1]);
-        new_random(eunitsRnd, campaign[level * 3 + 2]);
+        init_random(rnd, 0);
+        init_random(mapRnd, campaign[level * 3]);
+        init_random(funitsRnd, campaign[level * 3 + 1]);
+        init_random(eunitsRnd, campaign[level * 3 + 2]);
 
 #ifdef DEBUG
         System.out.println("start level " + level
@@ -642,6 +653,7 @@ void draw_sdl_string(char *s, int x, int y) {
 #else
     void paint() {
 #endif
+        declare_random(drawRnd);
         /*
          * paint map terrain
          * paint units
@@ -657,7 +669,7 @@ void draw_sdl_string(char *s, int x, int y) {
 #endif
 #endif
 
-       new_random(drawRnd, 0);
+       init_random(drawRnd, 0);
 
 #ifdef PRINTABLE
         set_color(WHITE);
@@ -1075,8 +1087,6 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         * For knowing what map data to search.
         */
         int searchLayer = MAP_RANGE_LAYER;
-
-        new_random(rnd, 0);
 
         /**
          * What unit type we are searching for now, since that required
