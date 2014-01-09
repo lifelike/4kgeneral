@@ -92,7 +92,6 @@ TODO
 ====
 - Support running general4c from directory not including font.bmp.
 - C port should use random number algorithm from java.util.Random.
-- Java applet is currently 4438 bytes. Make below 4096 again.
 
 License
 =======
