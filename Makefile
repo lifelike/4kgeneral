@@ -30,14 +30,23 @@ all: G.jar
 
 debug/%.java: %.cppjava %.images.h
 	cp $(^:.cppjava=.images.h) debug/ && \
-	$(CPP) -P -DDEBUG $< $@
+	$(CPP) -P -DJAVA -DDEBUG $< $@
 
 printable/%.java: %.cppjava %.images.h
 	cp $(^:.cppjava=.images.h) debug/ && \
-	$(CPP) -P -DPRINTABLE $< $@
+	$(CPP) -P -DJAVA -DPRINTABLE $< $@
 
 %.java: %.cppjava %.images.h
-	$(CPP) -P -DAPPLET $< $@
+	$(CPP) -P -DJAVA -DAPPLET $< $@
+
+%.c: %.cppjava %.images.h
+	$(CPP) $(CFLAGS) -P -DC -DSDL $< $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+general4c: G.o
+	$(CC) -o $@ $< $(LDFLAGS)
 
 debug/%.class: debug/%.java
 	javac -d debug $<
@@ -46,7 +55,7 @@ printable/%.class: printable/%.java
 	javac -d printable $<
 
 %.class: %.java
-	javac -target 1.5 $<
+	javac -target 1.5 -source 1.5 $<
 
 clean:
 	$(RM) -r *.class *~ *.jar *.java *.images.h tmp/* debug/*
