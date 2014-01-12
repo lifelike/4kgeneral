@@ -105,6 +105,7 @@ public class G
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <inttypes.h>
 
 #define str_concat
 
@@ -122,11 +123,34 @@ public class G
 #define byte int8_t
 #define char_at(a, i) a[i]
 
-#define RANDOM_STATE_SIZE 64
+#define declare_random(name) int64_t name
+#define init_random(name, seed) name = c_jsrand(seed)
+#define random_int(name, limit) c_jrand(&name, limit)
 
-#define declare_random(name) char name[RANDOM_STATE_SIZE]
-#define init_random(name, seed) initstate(seed, name, RANDOM_STATE_SIZE)
-#define random_int(name, limit) (setstate(name), random() % limit)
+// java.util.Random randomness
+
+int64_t c_jsrand(const int64_t seed) {
+    return (seed ^ 0x5deece66dL) & 0xffffffffffffL;
+}
+
+int32_t c_jrand(int64_t *seed, const int32_t limit) {
+    int64_t rnd;
+    int32_t res;
+
+    if (limit == 2 || limit == 4 || limit == 8 || limit == 16 || limit == 32) {
+        *seed = (*seed * 0x5deece66dL + 0xbL) & 0xffffffffffffL;
+        rnd = limit * (*seed >> 17);
+        res = (int32_t) (rnd >> 31);
+        return res;
+    }
+
+    do {
+        *seed = (*seed * 0x5deece66dL + 0xbL) & 0xffffffffffffL;
+        rnd = (*seed >> 17);
+        res = (int64_t) rnd % limit;
+    } while (rnd - res + (limit - 1) < 0);
+    return res;
+}
 
 void paint();
 
