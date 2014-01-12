@@ -39,14 +39,11 @@ printable/%.java: %.cppjava %.images.h
 %.java: %.cppjava %.images.h
 	$(CPP) -P -DJAVA -DAPPLET $< $@
 
-%.c: %.cppjava %.images.h
+src/%.c: %.cppjava %.images.h
 	$(CPP) $(CFLAGS) -P -DC -DSDL $< $@
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-general4c: G.o
-	$(CC) -o $@ $< $(LDFLAGS)
+general4c: src/G.c
+	mkdir -p build && cd build && cmake .. && make
 
 debug/%.class: debug/%.java
 	javac -d debug $<
