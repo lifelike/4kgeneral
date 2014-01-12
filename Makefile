@@ -55,7 +55,8 @@ printable/%.class: printable/%.java
 	javac -target 1.5 -source 1.5 $<
 
 clean:
-	$(RM) -r *.class *~ *.jar *.java *.images.h tmp/* debug/*
+	$(RM) -r *.class *~ *.jar *.java *.images.h tmp/* debug/* \
+	build general4c
 
 .PHONY: clean all
 
