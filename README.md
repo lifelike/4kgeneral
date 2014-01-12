@@ -81,8 +81,7 @@ C/SDL Desktop Port
 ==================
 Using even more preprocessor-hacks the code also can be compiled with
 a C compiler and SDL 2.0. Running *make general4c* should make the
-desktop version if you have *sdl2-config* installed and the proper
-configuration (see example.make).
+desktop version if you have *cmake* and *SDL2* installed.
 
 Currently the C port use the random function from stdlib rather than
 trying to mimic the java.util.Random algorithm, so the scenarios
@@ -91,7 +90,6 @@ are different.
 TODO
 ====
 - Support running general4c from directory not including font.bmp.
-- C port should use random number algorithm from java.util.Random.
 
 License
 =======
