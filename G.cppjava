@@ -336,21 +336,27 @@ function jsSetRGBColor(ctx, c) {
         #define CAMPAIGN_ENEMY_ARTILLERY (50)
 
     const_byte_array(campaign) = new_byte_array
-        0x29, 0x33, 0x39,
-        0x30, 0x1f, 0x22,
-        0x2b, 0x22, 0x22,
-        0x34, 0x7a, 0x74,
-        0x35, 0x42, 0x71,
-        0x45, 0x52, 0x01,
-        0x55, 0x62, 0x11,
-        0x65, -112, 0x32,
-        0x0a, 0x15, 0x31,
-        0x19, 0x74, 0x4a,
-        0x53, 0x54, -97,
-        0x55, 0x57, -92,
+// map, friendly, enemy, // level number as seen in game
+77, 97, 98, // 1
+81, 122, 102, // 2
+1, 122, 102, // 3
+85, -58, 127, // 4 - special
+75, -99, 105, // 5
+92, -85, -96, // 6
+97, -79, -86, // 7
+102, -70, -68, // 8
+108, -54, -47, // 9
+110, -48, -43, // 10
+113, -21, -38, // 11
+114, -13, -35, // 12
+116, 9, -34, // 13
+117, 11, -30, // 14
+125, 53, -4, // 15
+-121, 80, 7, // 16
     end_array;
 
-    #define LAST_CAMPAIGN_SCENARIO (11)
+#define LAST_CAMPAIGN_SCENARIO (15) // one less than highest in-game level
+// eg if the last scenario in campaign list says // 12, put 11 here
 
         #define COLOR_FRIENDLY_BACKGROUND (0x386bb9)
         #define COLOR_FRIENDLY_BORDER (0x0d38b9)
@@ -553,21 +559,21 @@ int32 rnd = 2;
 #elif JS
     function start() {
 #endif
-        int32 mapRnd = campaign[level * 3];
-        int32 funitsRnd = campaign[level * 3 + 1];
-        int32 eunitsRnd = campaign[level * 3 + 2];
+        int32 mapRnd = campaign[level * 3] + 129;
+        int32 funitsRnd = campaign[level * 3 + 1] + 129;
+        int32 eunitsRnd = campaign[level * 3 + 2] + 129;
         state = NEW_LEVEL;
         turn = 1;
 
 #ifdef DEBUG
         System.out.println("start level " + level
-                           + " (scenario: 0x"
-                           + Integer.toHexString(campaign[level * 3])
-                           + " 0x"
-                           + Integer.toHexString(campaign[level * 3 + 1])
-                           + " 0x"
-                           + Integer.toHexString(campaign[level * 3 + 2])
-                           + ")");
+                           + " (scenario: "
+                           + campaign[level * 3]
+                           + ", "
+                           + campaign[level * 3 + 1]
+                           + ", "
+                           + campaign[level * 3 + 2]
+                           + ",)");
 #endif
 
         for (int i = 0; i < MAP_DATA_TOTAL_SIZE; i += MAP_DATA_SIZE) {
@@ -596,10 +602,10 @@ int32 rnd = 2;
            }
         }
 
-        next_random_int(funitsRnd);
+        next_random_int(eunitsRnd);
         int firstEnemyColumn = CAMPAIGN_FRIENDLY_COLUMNS
             + CAMPAIGN_MIN_NML
-            + funitsRnd % MAP_COLUMNS / 4;
+            + eunitsRnd % MAP_COLUMNS / 4;
         i = 0;
         for (int c = 0; c < MAP_COLUMNS - 1; c++) {
             for (int r = 0; r < MAP_ROWS; r++) {
