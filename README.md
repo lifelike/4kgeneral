@@ -1,9 +1,13 @@
-4kgeneral
-=========
+4kgeneral (version 2)
+=====================
 
 Turn-based strategy game made originally for the 2012 Java 4k competition.
 
 http://java4k.com/index.php?action=games&method=view&gid=400
+
+Note: The entire campaign has changed since the Java 4k version. To
+play the original campaign you need to compile the version from the
+branch called version_1.
 
 Instructions
 ============
@@ -46,7 +50,8 @@ might be created to work on expanded versions ignoring the size limit.
 
 You need a *env.yourhostname* and *make.yourhostname* to use the
 Makefile and shell scripts. You can use at the included example.make
-and example.env as templates (notice the backwards names).
+and example.env as templates (notice the backwards names). You will
+also need a recent version of python pre-3.0 (eg version 2.7).
 
 Yes, I know that using the C pre-processor (cpp) with java is not the
 way you normally do it. It was an easy way to inject the image bitmap
@@ -81,11 +86,18 @@ C/SDL Desktop Port
 ==================
 Using even more preprocessor-hacks the code also can be compiled with
 a C compiler and SDL 2.0. Running *make general4c* should make the
-desktop version if you have *cmake* and *SDL2* installed.
+desktop version if you have *cmake* and *SDL2* and *python2* installed.
 
 Currently the C port use the random function from stdlib rather than
 trying to mimic the java.util.Random algorithm, so the scenarios
 are different.
+
+JavaScript Port
+===============
+A few lines of perprocessor-hacks allow the code in G.cppjava to also
+run in a web browser, rendering the game as a HTML Canvas. To build
+this version run *make html/general4.js*. Open *html/general4js.html*
+to play. As above you will need python2 to build this version.
 
 TODO
 ====
