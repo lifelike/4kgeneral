@@ -48,6 +48,9 @@ general4c: src/G.c
 debug/%.class: debug/%.java
 	javac -d debug $<
 
+html/general4.js: G.cppjava G.images.h
+	$(CPP) -P -DJS  $< $@
+
 printable/%.class: printable/%.java
 	javac -d printable $<
 

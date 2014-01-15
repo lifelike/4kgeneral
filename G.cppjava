@@ -5,7 +5,6 @@ import java.awt.Event;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.util.Random;
 
 #ifdef DEBUG
 import java.awt.Frame;
@@ -62,6 +61,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BLACK 0
 #define RED 0xff0000
 
+// Lehmer RNG was good enough for the ZX Spectrum
+// http://en.wikipedia.org/wiki/Lehmer_random_number_generator
+#define RND_G 75
+#define RND_N 65537
+
+#define next_random_int(name) name = (name * RND_G) % RND_N
+
 #ifdef JAVA
 public class G
 #if defined(APPLET)
@@ -77,19 +83,16 @@ public class G
 #endif
 
 #define str_concat +
-
+#define int32 int
 #define const_string(name) private final static String name
 #define const_byte_array(name) private final static byte[] name
-#define new_byte_array new byte[]
+#define new_byte_array new byte[] {
+#define cast_to_byte (byte)
+#define end_array }
 #define sized_byte_array(name, size) private final static byte[] name = new byte[size]
-#define const_int_array(name) private final static int[] name
 #define int_array(name) int[] name
-#define new_int_array new int[]
+#define new_int_array new int[] {
 #define char_at(a, i) a.charAt(i)
-
-#define declare_random(name) Random name
-#define init_random(name, seed) name = new Random(seed)
-#define random_int(name, limit) name .nextInt(limit)
 
 #define set_color(c) g.setColor(new Color(c))
 #define fill_rect(x, y, w, h) g.fillRect(x, y, w, h)
@@ -113,44 +116,17 @@ public class G
 
 #define private
 #define boolean bool
+#define int32 int32_t
 #define const_byte_array(name) int8_t name[]
-#define new_byte_array
+#define new_byte_array {
+#define end_array }
 #define sized_byte_array(name, size) int8_t name[size]
-#define const_int_array(name) int32_t name[]
 #define int_array(name) int32_t name[]
-#define new_int_array
+#define new_int_array {
 #define const_string(name) char name[]
 #define byte int8_t
+#define cast_to_byte (int8_t)
 #define char_at(a, i) a[i]
-
-#define declare_random(name) int64_t name
-#define init_random(name, seed) name = c_jsrand(seed)
-#define random_int(name, limit) c_jrand(&name, limit)
-
-// java.util.Random randomness
-
-int64_t c_jsrand(const int64_t seed) {
-    return (seed ^ 0x5deece66dL) & 0xffffffffffffL;
-}
-
-int32_t c_jrand(int64_t *seed, const int32_t limit) {
-    int64_t rnd;
-    int32_t res;
-
-    if (limit == 2 || limit == 4 || limit == 8 || limit == 16 || limit == 32) {
-        *seed = (*seed * 0x5deece66dL + 0xbL) & 0xffffffffffffL;
-        rnd = limit * (*seed >> 17);
-        res = (int32_t) (rnd >> 31);
-        return res;
-    }
-
-    do {
-        *seed = (*seed * 0x5deece66dL + 0xbL) & 0xffffffffffffL;
-        rnd = (*seed >> 17);
-        res = (int64_t) rnd % limit;
-    } while (rnd - res + (limit - 1) < 0);
-    return res;
-}
 
 void paint();
 
@@ -220,6 +196,50 @@ void draw_sdl_string(char *s, int x, int y) {
 #endif
 
 
+#endif
+
+#ifdef JS
+#define str_concat +
+
+#define ZOOM 1
+
+#define private
+#define boolean var
+#define int var
+#define int32 var
+#define cast_to_byte
+#define const_byte_array(name) var name
+#define new_byte_array [
+#define end_array ]
+#define sized_byte_array(name, size) name = new Int8Array(new ArrayBuffer(size))
+#define int_array(name) var name
+#define new_int_array [
+#define const_string(name) var name
+#define byte var
+#define char_at(a, i) a[i]
+
+function repaint() {
+    paint();
+}
+
+#define set_color(c) jsSetRGBColor(ctx, c)
+#define fill_rect(x, y, w, h) ctx.fillRect(x, y, w, h)
+#define blit_buffer()
+#define draw_string(s, x, y) jsDrawString(s, x, y)
+
+drawnStrings = [];
+
+function jsDrawString(s, x, y){
+    ctx.font = "bold 24px monospace";
+    ctx.fillText(s, x, y);
+}
+
+
+function jsSetRGBColor(ctx, c) {
+    ctx.fillStyle = "rgb(" + ((c & 0xff0000) >> 16) + "," +
+        ((c & 0xff00) >> 8) + "," +
+        (c & 0xff) + ")";
+}
 
 #endif
 
@@ -315,7 +335,7 @@ void draw_sdl_string(char *s, int x, int y) {
         #define CAMPAIGN_ENEMY_TANK (45)
         #define CAMPAIGN_ENEMY_ARTILLERY (50)
 
-    const_byte_array(campaign) = new_byte_array {
+    const_byte_array(campaign) = new_byte_array
         0x29, 0x33, 0x39,
         0x30, 0x1f, 0x22,
         0x2b, 0x22, 0x22,
@@ -328,7 +348,7 @@ void draw_sdl_string(char *s, int x, int y) {
         0x19, 0x74, 0x4a,
         0x53, 0x54, -97,
         0x55, 0x57, -92,
-    };
+    end_array;
 
     #define LAST_CAMPAIGN_SCENARIO (11)
 
@@ -364,13 +384,13 @@ void draw_sdl_string(char *s, int x, int y) {
     // terrain defense is chance of eliminating a unit in that terrain
     // (multiply by 5 to get chance in %)
 
-    int_array(terrainData) = new_int_array {
+    int_array(terrainData) = new_int_array
         0, 0, 0, 0, 0, 0, 9, 1,
         COLOR_WOODS_1, COLOR_WOODS_2, HEX_WIDTH * 7 / 10, 4, 4, 0x87, 6, 2,
         COLOR_CITY_1, COLOR_CITY_2, HEX_WIDTH * 4 / 5, 7, 7, 45, 5, 1,
         COLOR_WATER_1, COLOR_WATER_2, HEX_WIDTH / 4, 3, HEX_HEIGHT / 3, 30, 9,
         13
-    };
+    end_array;
 
     #define SCREEN_MAP_Y (BITMAP_HEIGHT)
     #define SCREEN_WIDTH (MAP_WIDTH)
@@ -513,7 +533,7 @@ void draw_sdl_string(char *s, int x, int y) {
     #define UNIT_RANGE_OFFSET (0)
     #define UNIT_MOVE_OFFSET (1)
     #define UNIT_SIZE (UNIT_MOVE_OFFSET + 1)
-    const_byte_array(unitData) = new_byte_array {
+    const_byte_array(unitData) = new_byte_array
             //INFANTRY
             2, 5,
             //TANK
@@ -522,25 +542,22 @@ void draw_sdl_string(char *s, int x, int y) {
             4, 3,
             //ENGINEER
             2, 5
-        };
+        end_array;
 
-declare_random(rnd);
+int32 rnd = 2;
 
 #ifdef JAVA
     public void start() {
-#else
+#elif C
     void start() {
+#elif JS
+    function start() {
 #endif
-        declare_random(mapRnd);
-        declare_random(funitsRnd);
-        declare_random(eunitsRnd);
+        int32 mapRnd = campaign[level * 3];
+        int32 funitsRnd = campaign[level * 3 + 1];
+        int32 eunitsRnd = campaign[level * 3 + 2];
         state = NEW_LEVEL;
         turn = 1;
-
-        init_random(rnd, 0);
-        init_random(mapRnd, campaign[level * 3]);
-        init_random(funitsRnd, campaign[level * 3 + 1]);
-        init_random(eunitsRnd, campaign[level * 3 + 2]);
 
 #ifdef DEBUG
         System.out.println("start level " + level
@@ -555,7 +572,8 @@ declare_random(rnd);
 
         for (int i = 0; i < MAP_DATA_TOTAL_SIZE; i += MAP_DATA_SIZE) {
             byte initTerrain = CLEAR;
-            if (random_int(mapRnd, CITY_RARITY) == 0) {
+            next_random_int(mapRnd);
+            if (mapRnd % CITY_RARITY == 0) {
                 initTerrain = CITY;
             }
             map[i + MAP_TERRAIN_LAYER] = initTerrain;
@@ -566,19 +584,22 @@ declare_random(rnd);
 
         int i = 0;
         // add 0-2 rivers down hex columns (including render to bitmap)
-        int nrRivers = random_int(mapRnd, MAX_NR_RIVERS);
+        next_random_int(mapRnd);
+        int nrRivers = mapRnd % MAX_NR_RIVERS;
         for (int n = 0; n < nrRivers; n++) {
-           int c = FIRST_POSSIBLE_RIVER_COLUMN
-               + random_int(mapRnd, MAP_COLUMNS - FIRST_POSSIBLE_RIVER_COLUMN);
+            next_random_int(mapRnd);
+            int c = FIRST_POSSIBLE_RIVER_COLUMN
+                + mapRnd % MAP_COLUMNS - FIRST_POSSIBLE_RIVER_COLUMN;
            for (int r = 0; r < MAP_ROWS; r++) {
                map[(c * MAP_ROWS + r) * MAP_DATA_SIZE + MAP_TERRAIN_LAYER]
                    = WATER;
            }
         }
 
+        next_random_int(funitsRnd);
         int firstEnemyColumn = CAMPAIGN_FRIENDLY_COLUMNS
             + CAMPAIGN_MIN_NML
-            + random_int(funitsRnd, MAP_COLUMNS / 4);
+            + funitsRnd % MAP_COLUMNS / 4;
         i = 0;
         for (int c = 0; c < MAP_COLUMNS - 1; c++) {
             for (int r = 0; r < MAP_ROWS; r++) {
@@ -594,7 +615,8 @@ declare_random(rnd);
                     if (map[i - MAP_DATA_SIZE + MAP_TERRAIN_LAYER] == WOODS) {
                         woods_percentage += WOODS_SPREAD;
                     }
-                    if (random_int(mapRnd, 100) < woods_percentage) {
+                    next_random_int(mapRnd);
+                    if (mapRnd % 100 < woods_percentage) {
                         terrain = WOODS;
                     }
                 }
@@ -605,7 +627,8 @@ declare_random(rnd);
                      || (level == 3 && c > (MAP_COLUMNS
                                             - CAMPAIGN_FRIENDLY_COLUMNS)))
                      && r > 0) {
-                    int u = random_int(funitsRnd, 100);
+                    next_random_int(funitsRnd);
+                    int u = funitsRnd % 100;
                     if (u < CAMPAIGN_FRIENDLY_ENGINEER) {
                         unit = ENGINEER;
                     }
@@ -624,12 +647,14 @@ declare_random(rnd);
                         map[i + MAP_FRIENDLY_FOV_LAYER] = 1;
                     }
                 } else if (c >= firstEnemyColumn) { // enemy territory
-                    int u = random_int(eunitsRnd, 1000);
+                    next_random_int(eunitsRnd);
+                    int u = eunitsRnd % 1000;
                     if (terrain == CITY || u < CAMPAIGN_ENEMY_INFANTRY) {
                         if (map[i + MAP_ROWS * MAP_DATA_SIZE
                                 + MAP_TERRAIN_LAYER] != WATER) {
                             // add some artillery behind city
-                            if (random_int(eunitsRnd, 2) == 0
+                            next_random_int(eunitsRnd);
+                            if (eunitsRnd % 2 == 0
                                 && terrain == CITY) {
                                 map[i + MAP_ROWS * MAP_DATA_SIZE
                                     + MAP_ENEMY_UNIT_LAYER] = ARTILLERY;
@@ -650,7 +675,8 @@ declare_random(rnd);
                     if (terrain == WATER) {
                         if (map[i + MAP_ROWS * MAP_DATA_SIZE
                                 + MAP_TERRAIN_LAYER] != WATER) {
-                            if (random_int(eunitsRnd, 100) < RIVER_LINE_GARRISON) {
+                            next_random_int(eunitsRnd);
+                            if (eunitsRnd % 100 < RIVER_LINE_GARRISON) {
                                 unit = INFANTRY;
                             }
                             map[i + MAP_ROWS * MAP_DATA_SIZE
@@ -674,10 +700,12 @@ declare_random(rnd);
 
 #ifdef JAVA
     public void paint(Graphics pg) {
-#else
+#elif C
     void paint() {
+#elif JS
+    function paint() {
 #endif
-        declare_random(drawRnd);
+        int drawRnd = 1;
         /*
          * paint map terrain
          * paint units
@@ -692,8 +720,6 @@ declare_random(rnd);
         Graphics g = bufferImage.getGraphics();
 #endif
 #endif
-
-       init_random(drawRnd, 0);
 
 #ifdef PRINTABLE
         set_color(WHITE);
@@ -718,9 +744,16 @@ declare_random(rnd);
                      SCREEN_LEVEL_NR_X, SCREEN_STATUS_BAR_TEXT_Y);
 #elif defined(C)
         char *turn_string = malloc(100);
-        snprintf(turn_string, 100, "TURN %d/15", turn);
+        snprintf(turn_string, 100, "TURN %d/15   MAP %d", turn, (level + 1));
         draw_string(turn_string, SCREEN_TURN_LABEL_X, SCREEN_STATUS_BAR_TEXT_Y);
         free(turn_string);
+
+#elif defined(JS)
+
+        draw_string("TURN " + turn + "/15" + "   MAP " + (level + 1),
+                    SCREEN_TURN_LABEL_X,
+                    SCREEN_STATUS_BAR_TEXT_Y);
+
 #endif
 
         if (state == FAIL_LEVEL) {
@@ -781,12 +814,15 @@ declare_random(rnd);
                 for (int a = 0;
                      a < terrainData[td + TERRAIN_DRAW_AMOUNT_OFFSET];
                      a++) {
+                    next_random_int(drawRnd);
                     int terrainColor =
-                        terrainData[td + random_int(drawRnd, 2)]; //cheating
+                        terrainData[td + drawRnd % 2]; //cheating
                     int xSpread
                         = terrainData[td + TERRAIN_DRAW_X_SPREAD_OFFSET];
-                    int tx = x - xSpread / 2 + random_int(drawRnd, xSpread);
-                    int ty = y - HEX_HEIGHT / 2 + random_int(drawRnd, HEX_HEIGHT);
+                    next_random_int(drawRnd);
+                    int tx = x - xSpread / 2 + drawRnd % xSpread;
+                    next_random_int(drawRnd);
+                    int ty = y - HEX_HEIGHT / 2 + drawRnd % HEX_HEIGHT;
                     int w = terrainData[td + TERRAIN_DRAW_WIDTH_OFFSET] * ZOOM;
                     int h = terrainData[td + TERRAIN_DRAW_HEIGHT_OFFSET] * ZOOM;
                     tx -= w / 2;
@@ -1006,6 +1042,12 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
         e.y = my;
 
 #endif
+
+#ifdef JS
+        function handleMouseEvent(mx, my) {
+            var e = {x: mx, y: my};
+#endif
+
         // -------------- if we get here the event is a mouse click ----------
 
         if (e.y < SCREEN_BUTTON_HEIGHT
@@ -1167,8 +1209,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                        || (terrain == CITY && searchUnit == ENGINEER)) {
                        multiplier *= 2;
                    }
-
-                   dr = random_int(rnd, 20); // roll a d20!
+                   next_random_int(rnd);
+                   dr = rnd % 20; // roll a d20!
                    if (dr < multiplier) { // defender eliminated
                        map[iClicked + MAP_ENEMY_UNIT_LAYER] = 0;
                    }
@@ -1180,7 +1222,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                    // defender unit can fire back once per turn only
                    if (map[iClicked + MAP_ATTACKED_LAYER] == 0
                        && searchUnit != ARTILLERY) {
-                       dr = random_int(rnd, 20); // roll d20 for defender firing
+                       next_random_int(rnd);
+                       dr = rnd % 20; // roll d20 for defender firing
 #ifdef DEBUG
                        System.out.println("enemy to hit: " + DEFENDER_FIRE_BACK
                                           + " dr: " + dr);
@@ -1300,7 +1343,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                     break;
                 case FIND_ATTACK_TARGETS:
                     searchLayer = MAP_RANGE_LAYER;
-                    byte range = (byte) (unitData[searchUnitIndex
+                    byte range = cast_to_byte (unitData[searchUnitIndex
                                                   + UNIT_RANGE_OFFSET]);
                     nrSearchIterations = range;
                     setFoundInLayer = MAP_MARK_LAYER;
@@ -1312,7 +1355,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                     break;
                 case FIND_ENEMY_ATTACK_TARGETS:
                     searchLayer = MAP_RANGE_LAYER;
-                    range = (byte) (unitData[searchUnitIndex
+                    range = cast_to_byte (unitData[searchUnitIndex
                                              + UNIT_RANGE_OFFSET]);
                     nrSearchIterations = range;
                     setFoundInLayer = MAP_MARK_LAYER;
@@ -1375,7 +1418,9 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                         byte v = map[i + MAP_TMP_LAYER];
                         if (v > 1) {
                             // find all adjacent hexes
-                            int_array(adj) = new_int_array {-1, -1, -1, -1, -1, -1};
+                            int_array(adj) = new_int_array
+                                -1, -1, -1, -1, -1, -1
+                                end_array;
 
                             /*
                              * I'm starting to think maybe I should have
@@ -1435,7 +1480,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             // act on each found adjacent hex
                             for (int d = 0; d < 6; d++) {
                                 if (adj[d] >= 0) {
-                                    byte ev = (byte) (v - 1);
+                                    byte ev = cast_to_byte (v - 1);
                                     byte bv = 0;
 
                                     /*
@@ -1462,7 +1507,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                                                     terrain * TERRAIN_DATA_SIZE
                                                     + TERRAIN_MOVE_COST_OFFSET]
                                                 ;
-                                            ev = (byte)
+                                            ev = cast_to_byte
                                                 (v - terrainCost);
                                         }
                                     } else if (waterBlocks
@@ -1608,7 +1653,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             if (map[iClicked + MAP_ATTACKED_LAYER] > 0) {
                                 multiplier *= 2;
                             }
-                            dr = random_int(rnd, 20); // roll a d20!
+                            next_random_int(rnd);
+                            dr = rnd % 20; // roll a d20!
                             if (dr < multiplier) { // defender eliminated
                                 map[iClicked + MAP_FRIENDLY_UNIT_LAYER] = 0;
                             }
@@ -1621,7 +1667,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
                             // but not at artillery
                             if (map[iClicked + MAP_ATTACKED_LAYER] > 0
                                 && u != ARTILLERY) {
-                                dr = random_int(rnd, 20);
+                                next_random_int(rnd);
+                                dr = rnd % 20;
 #ifdef DEBUG
                                 System.out.println("enemy to hit: "
                                                    + DEFENDER_FIRE_BACK
@@ -1728,6 +1775,21 @@ public static void main(String[] args) {
     frame.show();
     g.start();
 }
+#endif
+
+#ifdef JS
+        function gmain(canvas) {
+            ctx = canvas.getContext('2d');
+            canvas.addEventListener("mousedown", function(event) {
+                handleMouseEvent(event.clientX - canvas.offsetLeft
+                                 + document.body.scrollLeft
+                                 + document.documentElement.scrollLeft,
+                                 event.clientY - canvas.offsetTop
+                                 + document.body.scrollTop
+                                 + document.documentElement.scrollTop);
+            }, false);
+            start();
+        }
 #endif
 
 #if defined(C) && defined(SDL)

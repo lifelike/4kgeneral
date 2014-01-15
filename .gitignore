@@ -11,3 +11,5 @@ G.c
 general4c
 build
 
+*.images.h
+G.java
