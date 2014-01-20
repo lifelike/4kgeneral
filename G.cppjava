@@ -227,8 +227,6 @@ function repaint() {
 #define blit_buffer()
 #define draw_string(s, x, y) jsDrawString(s, x, y)
 
-drawnStrings = [];
-
 function jsDrawString(s, x, y){
     ctx.font = "bold 24px monospace";
     ctx.fillText(s, x, y);
@@ -240,6 +238,9 @@ function jsSetRGBColor(ctx, c) {
         ((c & 0xff00) >> 8) + "," +
         (c & 0xff) + ")";
 }
+
+
+#define LAST_CAMPAIGN_SCENARIO lastCampaignScenario
 
 #endif
 
@@ -355,7 +356,15 @@ function jsSetRGBColor(ctx, c) {
 -121, 80, 7, // 16
     end_array;
 
-#define LAST_CAMPAIGN_SCENARIO (15) // one less than highest in-game level
+#define NR_SCENARIOS 16
+
+#ifdef JS
+lastCampaignScenario = (NR_SCENARIOS - 1);
+#define LAST_CAMPAIGN_SCENARIO lastCampaignScenario
+#else
+#define LAST_CAMPAIGN_SCENARIO_RAW (NR_SCENARIOS - 1)
+#endif
+
 // eg if the last scenario in campaign list says // 12, put 11 here
 
         #define COLOR_FRIENDLY_BACKGROUND (0x386bb9)
@@ -1734,6 +1743,7 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
 #endif
 ) {
             state = WON_LEVEL;
+
             if (level == LAST_CAMPAIGN_SCENARIO) {
                 state = WON_CAMPAIGN;
             }

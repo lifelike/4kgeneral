@@ -3,10 +3,17 @@
   <head>
     <title>General4JS</title>
     <script type="text/javascript" src="general4.js"></script>
+    <script type="text/javascript" src="general4edithelp.js"></script>
   </head>
   <body>
     <canvas id="general" width="780" height="532"/>
     <script type="text/javascript">
+      var requestCampaign = gCampaignFromRequest(window.location.search);
+      if (requestCampaign
+          && requestCampaign.length >= 3) {
+          campaign = requestCampaign;
+          lastCampaignScenario = Math.floor(campaign.length / 3) - 1;
+      }
       gmain(document.getElementById("general"));
     </script>
   </body>
