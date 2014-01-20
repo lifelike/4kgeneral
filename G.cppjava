@@ -241,6 +241,7 @@ function jsSetRGBColor(ctx, c) {
 
 
 #define LAST_CAMPAIGN_SCENARIO lastCampaignScenario
+fovRange = 6
 
 #endif
 
@@ -513,6 +514,8 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
 
 #ifdef DEBUG
 #define FOV_RANGE 20
+#elif defined(JS)
+#define FOV_RANGE fovRange
 #else
 #define FOV_RANGE 6
 #endif
