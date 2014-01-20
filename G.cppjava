@@ -1808,6 +1808,7 @@ public static void main(String[] args) {
                                  + document.documentElement.scrollTop);
             }, false);
             start();
+            handleMouseEvent(-1, -1);
         }
 #endif
 
