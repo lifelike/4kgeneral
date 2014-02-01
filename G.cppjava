@@ -363,7 +363,7 @@ fovRange = 6
 lastCampaignScenario = (NR_SCENARIOS - 1);
 #define LAST_CAMPAIGN_SCENARIO lastCampaignScenario
 #else
-#define LAST_CAMPAIGN_SCENARIO_RAW (NR_SCENARIOS - 1)
+#define LAST_CAMPAIGN_SCENARIO (NR_SCENARIOS - 1)
 #endif
 
 // eg if the last scenario in campaign list says // 12, put 11 here
