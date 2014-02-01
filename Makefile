@@ -42,8 +42,15 @@ printable/%.java: %.cppjava %.images.h
 src/%.c: %.cppjava %.images.h
 	$(CPP) $(CFLAGS) -P -DC -DSDL $< $@
 
+sf/src/%.c: %.cppjava %.images.h
+	sb2 -t SailfishOS-armv7hl $(CPP) $(CFLAGS) -P -DC -DSDL $< $@
+
 general4c: src/G.c
 	mkdir -p build && cd build && cmake .. && make
+
+general4sf: sf/src/G.c
+	mkdir -p sf/build && cd sf/build && sb2 -t SailfishOS-armv7hl cmake .. \
+	&& sb2 -t SailfishOS-armv7hl make
 
 debug/%.class: debug/%.java
 	javac -d debug $<
@@ -59,7 +66,7 @@ printable/%.class: printable/%.java
 
 clean:
 	$(RM) -r *.class *~ *.jar *.java *.images.h tmp/* debug/* \
-	build general4c
+	build general4c general4sf sf/build
 
 .PHONY: clean all
 

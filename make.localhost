@@ -1,0 +1,5 @@
+PYTHON=python2
+CPP=cpp
+CFLAGS=`sb2 -t SailfishOS-armv7hl sdl2-config --cflags` -Wall -g \
+                    -DSDL -DC -std=c99
+LDFLAGS=`sb2 -t SailfishOS-armv7hl sdl2-config --libs`

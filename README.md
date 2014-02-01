@@ -92,6 +92,17 @@ Currently the C port use the random function from stdlib rather than
 trying to mimic the java.util.Random algorithm, so the scenarios
 are different.
 
+C/SDL Sailfish Port
+===================
+The Sailfish port is built inside of the Mer SDK virtual machine (it
+is installed when you install the Sailfish SDK and you can launch it
+in VirtualBox). Run *make generalsf*. Currently depends on the
+contents of *make.localhost* and *env.localhost* that unlike other
+*make.* or *env.* files are included in the git repository.
+More information:
+
+https://together.jolla.com/question/22379/porting-sdl-20-game-to-sailfish/
+
 JavaScript Port
 ===============
 A few lines of perprocessor-hacks allow the code in G.cppjava to also
@@ -102,6 +113,7 @@ to play. As above you will need python2 to build this version.
 TODO
 ====
 - Support running general4c from directory not including font.bmp.
+- Make RPM for Sailfish.
 
 License
 =======
