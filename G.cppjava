@@ -245,41 +245,41 @@ fovRange = 6
 
 #endif
 
-    #define HEX_HEIGHT (46 * ZOOM)
-     // HEX_WIDTH ~= HEX_HEIGHT * 1.155;
-    #define HEX_WIDTH (60 * ZOOM)
-    #define MAP_COLUMNS (17)
-    #define MAP_ROWS (10)
-    #define MAP_WIDTH ((1 + MAP_COLUMNS) * 3 / 4 * HEX_WIDTH)
-    #define MAP_HEIGHT (MAP_ROWS * HEX_HEIGHT + HEX_HEIGHT)
-    #define MAP_FIRST_COLUMN_CENTER_X (HEX_WIDTH / 2)
-    #define MAP_COLUMN_DISTANCE (HEX_WIDTH * 3 / 4)
-    #define MAP_EVEN_ROW_LAYER (HEX_HEIGHT / 2)
-    #define MAP_HEXES (MAP_COLUMNS * MAP_ROWS)
+#define HEX_HEIGHT (46 * ZOOM)
+ // HEX_WIDTH ~= HEX_HEIGHT * 1.155;
+#define HEX_WIDTH (60 * ZOOM)
+#define MAP_COLUMNS (17)
+#define MAP_ROWS (10)
+#define MAP_WIDTH ((1 + MAP_COLUMNS) * 3 / 4 * HEX_WIDTH)
+#define MAP_HEIGHT (MAP_ROWS * HEX_HEIGHT + HEX_HEIGHT)
+#define MAP_FIRST_COLUMN_CENTER_X (HEX_WIDTH / 2)
+#define MAP_COLUMN_DISTANCE (HEX_WIDTH * 3 / 4)
+#define MAP_EVEN_ROW_LAYER (HEX_HEIGHT / 2)
+#define MAP_HEXES (MAP_COLUMNS * MAP_ROWS)
 
-    #define NO_UNIT (0)
-    #define INFANTRY (1)
-    #define TANK (2)
-    #define ARTILLERY (3)
-    #define ENGINEER (4)
+#define NO_UNIT (0)
+#define INFANTRY (1)
+#define TANK (2)
+#define ARTILLERY (3)
+#define ENGINEER (4)
 
-    #define NR_UNIT_TYPES (ENGINEER)
+#define NR_UNIT_TYPES (ENGINEER)
 
-    #define BITMAP_DATA_WIDTH (8)
-    #define BITMAP_DATA_HEIGHT (8)
-    #define BITMAP_DATA_SIZE (BITMAP_DATA_WIDTH * BITMAP_DATA_HEIGHT)
-    #define BITMAP_SCALE (3 * ZOOM)
-    #define BITMAP_WIDTH (BITMAP_DATA_WIDTH * BITMAP_SCALE)
-    #define BITMAP_HEIGHT (BITMAP_DATA_HEIGHT * BITMAP_SCALE)
-    #define BITMAP_SELECTED (0)
-    #define BITMAP_LAST_UNIT (NR_UNIT_TYPES)
-    #define BITMAP_MOVE_TARGET (BITMAP_LAST_UNIT + 1)
-    #define BITMAP_ATTACK_TARGET (BITMAP_LAST_UNIT + 2)
-    #define BITMAP_FUTURE_TURN (BITMAP_LAST_UNIT + 3)
-    #define BITMAP_TURN (BITMAP_LAST_UNIT + 4)
-    #define NR_BITMAPS (BITMAP_TURN + 1)
+#define BITMAP_DATA_WIDTH (8)
+#define BITMAP_DATA_HEIGHT (8)
+#define BITMAP_DATA_SIZE (BITMAP_DATA_WIDTH * BITMAP_DATA_HEIGHT)
+#define BITMAP_SCALE (3 * ZOOM)
+#define BITMAP_WIDTH (BITMAP_DATA_WIDTH * BITMAP_SCALE)
+#define BITMAP_HEIGHT (BITMAP_DATA_HEIGHT * BITMAP_SCALE)
+#define BITMAP_SELECTED (0)
+#define BITMAP_LAST_UNIT (NR_UNIT_TYPES)
+#define BITMAP_MOVE_TARGET (BITMAP_LAST_UNIT + 1)
+#define BITMAP_ATTACK_TARGET (BITMAP_LAST_UNIT + 2)
+#define BITMAP_FUTURE_TURN (BITMAP_LAST_UNIT + 3)
+#define BITMAP_TURN (BITMAP_LAST_UNIT + 4)
+#define NR_BITMAPS (BITMAP_TURN + 1)
 
-    const_string(BITMAP_DATA) =
+const_string(BITMAP_DATA) =
 #include "G.images.h"
         ;
 
@@ -299,43 +299,43 @@ fovRange = 6
     /**
      * Base percentage of hex containing woods.
      */
-    #define WOODS_BASE (10)
+#define WOODS_BASE (10)
 
     /**
      * Increased percentage of hex containing woods
      * for each of hex above and to the left that contains woods.
      */
-        #define WOODS_SPREAD (30)
+#define WOODS_SPREAD (30)
 
-        #define MAX_NR_RIVERS (3)
+#define MAX_NR_RIVERS (3)
 
-        #define FIRST_POSSIBLE_RIVER_COLUMN (3)
+#define FIRST_POSSIBLE_RIVER_COLUMN (3)
 
     /**
      * Percentage of hexes behind rivers that have no other unit
      * that will receive an infantry unit.
      */
-        #define RIVER_LINE_GARRISON (50)
+#define RIVER_LINE_GARRISON (50)
 
-        #define BRIDGE_PERCENT (5)
+#define BRIDGE_PERCENT (5)
 
-        #define CAMPAIGN_FRIENDLY_COLUMNS (FIRST_POSSIBLE_RIVER_COLUMN)
+#define CAMPAIGN_FRIENDLY_COLUMNS (FIRST_POSSIBLE_RIVER_COLUMN)
     /**
      * Minimum size of no man's land.
      */
-        #define CAMPAIGN_MIN_NML (3)
+#define CAMPAIGN_MIN_NML (3)
 
     // following are culmulative percentages
-        #define CAMPAIGN_FRIENDLY_INFANTRY (17)
-        #define CAMPAIGN_FRIENDLY_TANK (24)
-        #define CAMPAIGN_FRIENDLY_ARTILLERY (30)
-        #define CAMPAIGN_FRIENDLY_ENGINEER (35)
+#define CAMPAIGN_FRIENDLY_INFANTRY (17)
+#define CAMPAIGN_FRIENDLY_TANK (24)
+#define CAMPAIGN_FRIENDLY_ARTILLERY (30)
+#define CAMPAIGN_FRIENDLY_ENGINEER (35)
 
     // for the enemy we use random number 0-999 instead
     // because of the much larger area covered
-        #define CAMPAIGN_ENEMY_INFANTRY (35)
-        #define CAMPAIGN_ENEMY_TANK (45)
-        #define CAMPAIGN_ENEMY_ARTILLERY (50)
+#define CAMPAIGN_ENEMY_INFANTRY (35)
+#define CAMPAIGN_ENEMY_TANK (45)
+#define CAMPAIGN_ENEMY_ARTILLERY (50)
 
     const_byte_array(campaign) = new_byte_array
 // map, friendly, enemy, // level number as seen in game
@@ -368,34 +368,34 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
 
 // eg if the last scenario in campaign list says // 12, put 11 here
 
-        #define COLOR_FRIENDLY_BACKGROUND (0x386bb9)
-        #define COLOR_FRIENDLY_BORDER (0x0d38b9)
-        #define COLOR_ENEMY_BACKGROUND (0xe5a047)
-        #define COLOR_ENEMY_BORDER (0xb93838)
-        #define COLOR_MOVED_BORDER (0x878787)
-        #define COLOR_OPEN (0xffffed)
-        #define COLOR_WOODS_1 (0x3a691d)
-        #define COLOR_WOODS_2 (0x62875b)
-        #define COLOR_WATER_1 (0x62a7a7)
-        #define COLOR_WATER_2 (0x404aa7)
-        #define COLOR_CITY_1 (0x624848)
-        #define COLOR_CITY_2 (0xa78787)
-        #define COLOR_RED_1 (0xff0037)
-        #define COLOR_RED_2 (0xff4037)
-        #define COLOR_GREEN_1 (0x62ff00)
-        #define COLOR_GREEN_2 (0x3aa700)
+#define COLOR_FRIENDLY_BACKGROUND (0x386bb9)
+#define COLOR_FRIENDLY_BORDER (0x0d38b9)
+#define COLOR_ENEMY_BACKGROUND (0xe5a047)
+#define COLOR_ENEMY_BORDER (0xb93838)
+#define COLOR_MOVED_BORDER (0x878787)
+#define COLOR_OPEN (0xffffed)
+#define COLOR_WOODS_1 (0x3a691d)
+#define COLOR_WOODS_2 (0x62875b)
+#define COLOR_WATER_1 (0x62a7a7)
+#define COLOR_WATER_2 (0x404aa7)
+#define COLOR_CITY_1 (0x624848)
+#define COLOR_CITY_2 (0xa78787)
+#define COLOR_RED_1 (0xff0037)
+#define COLOR_RED_2 (0xff4037)
+#define COLOR_GREEN_1 (0x62ff00)
+#define COLOR_GREEN_2 (0x3aa700)
 
     // defining how to draw map "hexes" (more like circles)
     // for each terrain type the listed values are:
-        #define TERRAIN_DRAW_COLOR_1 (0)
-        #define TERRAIN_DRAW_COLOR_2 (1)
-        #define TERRAIN_DRAW_X_SPREAD_OFFSET (2)
-        #define TERRAIN_DRAW_WIDTH_OFFSET (3)
-        #define TERRAIN_DRAW_HEIGHT_OFFSET (4)
-        #define TERRAIN_DRAW_AMOUNT_OFFSET (5)
-        #define TERRAIN_DEFENSE_OFFSET (6)
-        #define TERRAIN_MOVE_COST_OFFSET (7)
-        #define TERRAIN_DATA_SIZE (TERRAIN_MOVE_COST_OFFSET + 1)
+#define TERRAIN_DRAW_COLOR_1 (0)
+#define TERRAIN_DRAW_COLOR_2 (1)
+#define TERRAIN_DRAW_X_SPREAD_OFFSET (2)
+#define TERRAIN_DRAW_WIDTH_OFFSET (3)
+#define TERRAIN_DRAW_HEIGHT_OFFSET (4)
+#define TERRAIN_DRAW_AMOUNT_OFFSET (5)
+#define TERRAIN_DEFENSE_OFFSET (6)
+#define TERRAIN_MOVE_COST_OFFSET (7)
+#define TERRAIN_DATA_SIZE (TERRAIN_MOVE_COST_OFFSET + 1)
 
     // terrain defense is chance of eliminating a unit in that terrain
     // (multiply by 5 to get chance in %)
@@ -408,54 +408,54 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
         13
     end_array;
 
-    #define SCREEN_MAP_Y (BITMAP_HEIGHT)
-    #define SCREEN_WIDTH (MAP_WIDTH)
-    #define SCREEN_HEIGHT (MAP_HEIGHT + SCREEN_MAP_Y + 2)
-        #define SCREEN_STATUS_BAR_TEXT_Y (BITMAP_HEIGHT - 3)
-        #define SCREEN_TURN_LABEL_X (10)
-        #define SCREEN_TURN_NR_X (50)
-        #define SCREEN_TURN_SLASH_X (65)
-        #define SCREEN_TURN_TOTAL_X (70)
-        #define SCREEN_LEVEL_LABEL_X (140)
-        #define SCREEN_LEVEL_NR_X (180)
-        #define SCREEN_BUTTON_X (SCREEN_WIDTH - 100)
-        #define SCREEN_BUTTON_TEXT_X (SCREEN_WIDTH - 80)
-        #define SCREEN_BUTTON_HEIGHT (BITMAP_HEIGHT)
-        #define SCREEN_MESSAGE_X (300)
+#define SCREEN_MAP_Y (BITMAP_HEIGHT)
+#define SCREEN_WIDTH (MAP_WIDTH)
+#define SCREEN_HEIGHT (MAP_HEIGHT + SCREEN_MAP_Y + 2)
+#define SCREEN_STATUS_BAR_TEXT_Y (BITMAP_HEIGHT - 3)
+#define SCREEN_TURN_LABEL_X (10)
+#define SCREEN_TURN_NR_X (50)
+#define SCREEN_TURN_SLASH_X (65)
+#define SCREEN_TURN_TOTAL_X (70)
+#define SCREEN_LEVEL_LABEL_X (140)
+#define SCREEN_LEVEL_NR_X (180)
+#define SCREEN_BUTTON_X (SCREEN_WIDTH - 100)
+#define SCREEN_BUTTON_TEXT_X (SCREEN_WIDTH - 80)
+#define SCREEN_BUTTON_HEIGHT (BITMAP_HEIGHT)
+#define SCREEN_MESSAGE_X (300)
 
-        #define UNIT_BORDER_WIDTH (2)
+#define UNIT_BORDER_WIDTH (2)
 
-        #define CLEAR (0)
-        #define WOODS (1)
-        #define CITY (2)
-        #define WATER (3)
-        #define NR_TERRAIN_TYPES (4)
+#define CLEAR (0)
+#define WOODS (1)
+#define CITY (2)
+#define WATER (3)
+#define NR_TERRAIN_TYPES (4)
 
-        #define CITY_RARITY (40)
+#define CITY_RARITY (40)
 
-        #define NR_TURNS (15)
+#define NR_TURNS (15)
 
-        #define SEARCH_STATE_BIT (64)
+#define SEARCH_STATE_BIT (64)
 
-        #define NEW_LEVEL (1)
-        #define NEW_TURN (2 | SEARCH_STATE_BIT)
-        #define SELECT_UNIT_TO_MOVE (3)
-        #define MARK_UNIT_TO_MOVE (4)
-        #define FIND_MOVE_TARGETS (5 | SEARCH_STATE_BIT)
-        #define FIND_ATTACK_TARGETS (6 | SEARCH_STATE_BIT)
-        #define SHOW_TARGETS (7)
-        #define FIND_ENEMY_MOVE_TARGETS (8 | SEARCH_STATE_BIT)
-        #define FIND_ENEMY_ZOC (9 | SEARCH_STATE_BIT)
-        #define FIND_FRIENDLY_ZOC (10 | SEARCH_STATE_BIT)
-        #define WON_CAMPAIGN (11)
-        #define WON_LEVEL (12)
-        #define FAIL_LEVEL (13)
-        #define FIND_FRIENDLY_FOV (14 | SEARCH_STATE_BIT)
-        #define SELECT_ENEMY_UNIT_TO_MOVE (15 | SEARCH_STATE_BIT)
-        #define FIND_ENEMY_ATTACK_TARGETS (16 | SEARCH_STATE_BIT)
-        #define FIND_FRIENDLY_THREAT (17 | SEARCH_STATE_BIT)
-        #define FIND_ENEMY_THREAT (18 | SEARCH_STATE_BIT)
-        #define FIND_ENEMY_VALUE (19| SEARCH_STATE_BIT)
+#define NEW_LEVEL (1)
+#define NEW_TURN (2 | SEARCH_STATE_BIT)
+#define SELECT_UNIT_TO_MOVE (3)
+#define MARK_UNIT_TO_MOVE (4)
+#define FIND_MOVE_TARGETS (5 | SEARCH_STATE_BIT)
+#define FIND_ATTACK_TARGETS (6 | SEARCH_STATE_BIT)
+#define SHOW_TARGETS (7)
+#define FIND_ENEMY_MOVE_TARGETS (8 | SEARCH_STATE_BIT)
+#define FIND_ENEMY_ZOC (9 | SEARCH_STATE_BIT)
+#define FIND_FRIENDLY_ZOC (10 | SEARCH_STATE_BIT)
+#define WON_CAMPAIGN (11)
+#define WON_LEVEL (12)
+#define FAIL_LEVEL (13)
+#define FIND_FRIENDLY_FOV (14 | SEARCH_STATE_BIT)
+#define SELECT_ENEMY_UNIT_TO_MOVE (15 | SEARCH_STATE_BIT)
+#define FIND_ENEMY_ATTACK_TARGETS (16 | SEARCH_STATE_BIT)
+#define FIND_FRIENDLY_THREAT (17 | SEARCH_STATE_BIT)
+#define FIND_ENEMY_THREAT (18 | SEARCH_STATE_BIT)
+#define FIND_ENEMY_VALUE (19| SEARCH_STATE_BIT)
 
 #ifdef DEBUG
     byte debugPlace = NO_UNIT;
@@ -485,31 +485,31 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
                    };
 #endif
 
-    #define MARK_NONE (-1)
-    #define MARK_SELECTED (BITMAP_SELECTED)
-    #define MARK_MOVE_TARGET (BITMAP_MOVE_TARGET)
-    #define MARK_ATTACK_TARGET (BITMAP_ATTACK_TARGET)
+#define MARK_NONE (-1)
+#define MARK_SELECTED (BITMAP_SELECTED)
+#define MARK_MOVE_TARGET (BITMAP_MOVE_TARGET)
+#define MARK_ATTACK_TARGET (BITMAP_ATTACK_TARGET)
 
     private int level = 0;
 
 #define MAP_TERRAIN_LAYER (0)
-    #define MAP_FRIENDLY_UNIT_LAYER (1)
-    #define MAP_MARK_LAYER (2)
-    #define MAP_FRIENDLY_MOVED_LAYER (3)
-    #define MAP_FRIENDLY_FOV_LAYER (4)
-    #define MAP_ENEMY_UNIT_LAYER (5)
-    #define MAP_ZOC_LAYER (6)
-    #define MAP_MOVE_COST_LAYER (7)
-    #define MAP_RANGE_LAYER (8)
-    #define MAP_TMP_LAYER (9)
-    #define MAP_FRIENDLY_THREAT_LAYER (10)
-    #define MAP_ENEMY_THREAT_LAYER (11)
-    #define MAP_ENEMY_VALUE_LAYER (12)
-    #define MAP_ENEMY_MOVED_LAYER (13)
-    #define MAP_ATTACKED_LAYER (14)
+#define MAP_FRIENDLY_UNIT_LAYER (1)
+#define MAP_MARK_LAYER (2)
+#define MAP_FRIENDLY_MOVED_LAYER (3)
+#define MAP_FRIENDLY_FOV_LAYER (4)
+#define MAP_ENEMY_UNIT_LAYER (5)
+#define MAP_ZOC_LAYER (6)
+#define MAP_MOVE_COST_LAYER (7)
+#define MAP_RANGE_LAYER (8)
+#define MAP_TMP_LAYER (9)
+#define MAP_FRIENDLY_THREAT_LAYER (10)
+#define MAP_ENEMY_THREAT_LAYER (11)
+#define MAP_ENEMY_VALUE_LAYER (12)
+#define MAP_ENEMY_MOVED_LAYER (13)
+#define MAP_ATTACKED_LAYER (14)
 
-    #define MAP_DATA_SIZE (15)
-    #define MAP_DATA_TOTAL_SIZE (MAP_COLUMNS * MAP_ROWS * MAP_DATA_SIZE)
+#define MAP_DATA_SIZE (15)
+#define MAP_DATA_TOTAL_SIZE (MAP_COLUMNS * MAP_ROWS * MAP_DATA_SIZE)
     sized_byte_array(map, MAP_DATA_TOTAL_SIZE);
 
 #ifdef DEBUG
@@ -520,15 +520,15 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
 #define FOV_RANGE 6
 #endif
 
-    #define DEFENDER_FIRE_BACK (6)
+#define DEFENDER_FIRE_BACK (6)
 
     // ****** AI TWEAKS BEGIN
 
-    #define DEFAULT_ZOC_VALUE (10)
-    #define VALUE_SEARCH_ITERATIONS (10)
-    #define THREAT_SEARCH_ITERATIONS (10)
-    #define CITY_VALUE (30)
-    #define ARTILLERY_DEFEND_VALUE (5)
+#define DEFAULT_ZOC_VALUE (10)
+#define VALUE_SEARCH_ITERATIONS (10)
+#define THREAT_SEARCH_ITERATIONS (10)
+#define CITY_VALUE (30)
+#define ARTILLERY_DEFEND_VALUE (5)
 
     // ****** AI TWEAKS END
 
@@ -546,11 +546,11 @@ lastCampaignScenario = (NR_SCENARIOS - 1);
      * All units have a movement allowance of 12, but different costs
      * for different terrain types.
      */
-    #define UNIT_THREAT (5)
+#define UNIT_THREAT (5)
 
-    #define UNIT_RANGE_OFFSET (0)
-    #define UNIT_MOVE_OFFSET (1)
-    #define UNIT_SIZE (UNIT_MOVE_OFFSET + 1)
+#define UNIT_RANGE_OFFSET (0)
+#define UNIT_MOVE_OFFSET (1)
+#define UNIT_SIZE (UNIT_MOVE_OFFSET + 1)
     const_byte_array(unitData) = new_byte_array
             //INFANTRY
             2, 5,
@@ -1046,7 +1046,8 @@ for (int layer = MAP_FRIENDLY_THREAT_LAYER;
 #endif
         }
 
-#endif // JAVA
+#endif
+ // endif JAVA
 #ifdef C
 
     typedef struct EventStruct {
