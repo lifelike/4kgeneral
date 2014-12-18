@@ -1,13 +1,13 @@
 import os
 import sys
-import Image
+import PIL.Image
 
 os.system("touch %s" % sys.argv[2])
 
 PIXELS_PER_LINE = 8
 LINES_PER_IMAGE = 8
 
-im = Image.open(sys.argv[1])
+im = PIL.Image.open(sys.argv[1])
 o = open(sys.argv[2], "w")
 
 WHITE = (255, 255, 255)
