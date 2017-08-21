@@ -77,9 +77,9 @@ public class G
 #endif
 {
 #ifdef PRINTABLE
-    #define ZOOM 5
+#define ZOOM 5
 #else
-    #define ZOOM 1
+#define ZOOM 1
 #endif
 
 #define str_concat +
