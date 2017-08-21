@@ -121,7 +121,7 @@ TODO
 
 License
 =======
-(C) Copyright 2012, 2013, 2014 Pelle Nilsson
+(C) Copyright 2012, 2013, 2014, 2017 Pelle Nilsson
 
 All rights reserved.
 
